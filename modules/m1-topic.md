@@ -1,5 +1,9 @@
 # M1 选题诊断模块
 
+> **理论基础**：
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第7.1节（论文大纲生成 Prompt）
+> - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 八层提取法思想
+
 ## 功能
 评估研究 idea 的可行性、创新性、与领域契合度
 

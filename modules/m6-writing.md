@@ -1,5 +1,10 @@
 # M6 写作辅助模块
 
+> **理论基础**：
+> - 参见 [ACADEMIC-WRITING-GUIDE.md](refence/ACADEMIC-WRITING-GUIDE.md) 全文（数学符号、缩写、格式规范）
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第2部分（用词与语言风格）
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第6部分（常见错误与避免方法）
+
 ## 功能
 段落生成、语言润色、逻辑连贯性检查
 

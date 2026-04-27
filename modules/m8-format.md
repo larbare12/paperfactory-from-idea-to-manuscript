@@ -1,5 +1,10 @@
 # M8 格式检查模块
 
+> **理论基础**：
+> - 参见 [ACADEMIC-WRITING-GUIDE.md](refence/ACADEMIC-WRITING-GUIDE.md) 全文（格式规范、参考文献、图表）
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第5部分（引用与参考文献）
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 附录（投稿前检查清单）
+
 ## 功能
 期刊格式、参考文献、最终提交检查
 

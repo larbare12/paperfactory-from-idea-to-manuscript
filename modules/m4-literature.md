@@ -1,5 +1,10 @@
 # M4 文献管理模块
 
+> **理论基础**：
+> - 参见 [ACADEMIC-WRITING-GUIDE.md](refence/ACADEMIC-WRITING-GUIDE.md) 第三部分（参考文献格式规范）
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第5部分（引用与参考文献）
+> - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 引用逻辑分析思想
+
 ## 功能
 引用网络分析、关键文献识别、格式规范
 

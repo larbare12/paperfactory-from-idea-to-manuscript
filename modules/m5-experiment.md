@@ -1,5 +1,10 @@
 # M5 实验设计模块
 
+> **理论基础**：
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第7.5节（实验设计检查 Prompt）
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第4部分（图表与数据呈现）
+> - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 评估标准设计思想
+
 ## 功能
 实验方案检查、指标选择、对比方法建议
 

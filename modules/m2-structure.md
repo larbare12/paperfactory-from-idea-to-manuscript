@@ -1,5 +1,9 @@
 # M2 结构规划模块
 
+> **理论基础**：
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第1.2节（IMRAD 标准结构）
+> - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 九模块架构思想
+
 ## 功能
 生成 IMRAD 大纲、章节逻辑、篇幅分配
 

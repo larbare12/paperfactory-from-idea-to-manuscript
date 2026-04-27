@@ -1,5 +1,9 @@
 # M3 论证设计模块
 
+> **理论基础**：
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第1.1节（明确的目标导向）
+> - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 推理架构提取思想
+
 ## 功能
 设计核心论点、证据链、反驳预判
 

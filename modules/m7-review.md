@@ -1,5 +1,9 @@
 # M7 评审模拟模块
 
+> **理论基础**：
+> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第3部分（写作流程规范）
+> - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 专家评估方法
+
 ## 功能
 模拟审稿人视角、预判问题、修改建议
 
