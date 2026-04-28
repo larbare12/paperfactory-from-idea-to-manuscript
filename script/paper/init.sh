@@ -20,11 +20,16 @@ else
     PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 fi
 
-# 加载 .env 文件（如果存在）
+# 加载 .env 文件和 API 配置（如果存在）
 if [[ -f "$PROJECT_ROOT/.env" ]]; then
     set -a
     source "$PROJECT_ROOT/.env"
     set +a
+fi
+
+# 加载 API 配置
+if [[ -f "$PROJECT_ROOT/script/paper/load_config.sh" ]]; then
+    source "$PROJECT_ROOT/script/paper/load_config.sh"
 fi
 
 # 数据目录与工作目录

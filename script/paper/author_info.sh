@@ -11,11 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 # 加载配置
-if [[ -f "$PROJECT_ROOT/.env" ]]; then
-    set -a
-    source "$PROJECT_ROOT/.env"
-    set +a
-fi
+source "$SCRIPT_DIR/load_config.sh"
 
 # 参数
 AUTHOR_ID="${1:-}"
@@ -39,13 +35,13 @@ if [[ -f "$RATE_LIMIT_FILE" ]]; then
 fi
 
 # 构建请求
-API_URL="https://api.semanticscholar.org/graph/v1/author/${AUTHOR_ID}"
+API_URL="${S2_BASE_URL}/graph/v1/author/${AUTHOR_ID}"
 FIELDS="name,hIndex,citationCount,paperCount,affiliations,homepage,url"
 
 # 执行请求
 RESPONSE=$(curl -s -w "\n%{http_code}" \
     "${API_URL}?fields=${FIELDS}" \
-    ${S2_API_KEY:+-H "x-api-key: $S2_API_KEY"} \
+    ${S2_API_KEY:+-H "$S2_API_KEY_HEADER: $S2_API_KEY"} \
     --max-time 30 2>/dev/null)
 
 # 更新 rate limit
