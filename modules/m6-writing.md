@@ -1,12 +1,76 @@
 # M6 写作辅助模块
 
 > **理论基础**：
-> - 参见 [ACADEMIC-WRITING-GUIDE.md](refence/ACADEMIC-WRITING-GUIDE.md) 全文（数学符号、缩写、格式规范）
-> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第2部分（用词与语言风格）
-> - 参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md) 第6部分（常见错误与避免方法）
+> - 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/ACADEMIC-WRITING-GUIDE.md) 全文（数学符号、缩写、格式规范）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第2部分（用词与语言风格）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第6部分（常见错误与避免方法）
+
+> **流程位置**：M1 → M2 → M3 → M4 → M5 → **M6（本模块）** → M7 总检
+> 本模块按 [M5 论证设计](m5-argument.md) 产出的论证骨架展开正文，依据 [M4 结构规划](m4-structure.md) 的章节边界控制内容。
 
 ## 功能
-段落生成、语言润色、逻辑连贯性检查
+段落生成、语言润色、逻辑连贯性检查。
+**核心约束**：每提出一个 claim，必须先在 `relate-work/` 找到本地证据；找不到才回退到 `find_evidence.sh` 占位（当前未实现，自动标记 `[NEEDS-EVIDENCE]`）。
+
+---
+
+## 🔒 写作前置规则：观点必须有论据
+
+> 这条规则**优先级高于所有润色和结构建议**。先有论据，再有观点。
+
+### 流程
+
+```
+要写的 claim
+    ↓
+Step A. 在 relate-work/ 检索是否已有支撑材料
+    ↓
+   ├─ 找到 → 直接引用（cite key 取自 ref-*.md 或 search-*.json）
+   │
+   └─ 没找到 → Step B. 调用 find_evidence.sh（占位脚本）
+                  ↓
+                 ├─ 脚本实现后 → 自动检索 + 写入 relate-work/ + 给出 cite key
+                 │
+                 └─ 当前未实现（exit 1）→ 在草稿对应位置标记 [NEEDS-EVIDENCE]，
+                                          继续写作不阻塞，事后回填
+```
+
+### 操作清单
+
+```bash
+# Step A：本地检索（扁平目录里 grep 即可）
+grep -li "<claim 关键词>" relate-work/*.md relate-work/*.json
+
+# Step B：找不到时调占位脚本
+bash script/paper/find_evidence.sh "<完整 claim 一句话>"
+# 当前会 exit 1，stderr 输出 {"error": "not implemented yet", ...}
+# 触发约定：在草稿对应句子末尾插入 [NEEDS-EVIDENCE]
+```
+
+### 示例
+
+> 草稿原句：
+> > Vision Transformer outperforms ResNet-50 on ImageNet by 5%.
+>
+> 处理：
+> 1. `grep -li "vision transformer.*imagenet" relate-work/*` → 命中 `ref-dosovitskiy2021vit.md`
+> 2. 替换为：
+>    > Vision Transformer outperforms ResNet-50 on ImageNet by 5%~\cite{dosovitskiy2021vit}.
+>
+> 若 grep 无命中：
+> 1. `bash script/paper/find_evidence.sh "ViT outperforms ResNet-50 on ImageNet"` → exit 1
+> 2. 替换为：
+>    > Vision Transformer outperforms ResNet-50 on ImageNet by 5% [NEEDS-EVIDENCE].
+> 3. [M0 项目仪表盘](m0-dashboard.md) 会列出所有 `[NEEDS-EVIDENCE]` 等待回填，[M7 投稿前总检](m7-final-check.md) 会拒绝带有未回填标记的稿件进入投稿流程。
+
+### 为什么不直接联网搜？
+
+故意留 `find_evidence.sh` 作为**占位** 而非默认行为，原因：
+- 联网搜索的结果应当先经用户 review 再写入 relate-work/，避免引入未审核的引用
+- 占位的存在让"哪些 claim 还没有论据"显式可见，而不是被自动填充掩盖
+- 等 `find_evidence.sh` 真正实现后，行为切换是单点改动
+
+---
 
 ## 输入
 - 草稿段落
@@ -179,5 +243,7 @@ BERT        | Section 2.1      | Bidirectional Encoder Representations from Tran
 | 绝对化 "This is the best" | 谨慎 "This method outperforms" |
 
 ## 参考资源
-- 参见 refence/PAPER-WRITING-GUIDE.md 第2部分
-- 参见 refence/ACADEMIC-WRITING-GUIDE.md
+- 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第2部分
+- 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/ACADEMIC-WRITING-GUIDE.md)
+- 本地论据池：[`relate-work/`](../relate-work/)
+- 占位检索脚本：[`script/paper/find_evidence.sh`](../script/paper/find_evidence.sh)（未实现）

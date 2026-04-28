@@ -33,11 +33,23 @@
 
 ```
 .
-├── SKILL.md                    # Skill 主文档（使用说明）
-├── README.md                   # 本文件（项目介绍）
-└── refence/
-    ├── ACADEMIC-WRITING-GUIDE.md   # 学术写作规范
-    └── PAPER-WRITING-GUIDE.md      # 论文写作指南
+├── SKILL.md                          # Skill 主文档（使用说明）
+├── README.md                         # 本文件（项目介绍）
+├── modules/                          # 八大写作模块（M1–M8）
+├── reference/                          # 写作规范 + 期刊数据库
+│   ├── ACADEMIC-WRITING-GUIDE.md     # 学术写作规范
+│   ├── PAPER-WRITING-GUIDE.md        # 论文写作指南
+│   ├── ccf_2026.sqlite               # CCF 分级数据
+│   ├── ccf_2026.jsonl
+│   └── impact_factor.sqlite3         # 期刊影响因子 / JCR / 中科院分区
+├── script/paper/                     # 联网检索 + 文献质量评估脚本
+│   ├── init.sh
+│   ├── paper_search.sh               # S2 standard / bulk + CrossRef fallback
+│   ├── venue_lookup.sh               # CCF + 影响因子综合查询
+│   ├── author_info.sh                # 作者 H-index
+│   ├── doi2bibtex.sh                 # DOI → BibTeX
+│   └── find_evidence.sh              # 占位：自动找论据（待实现）
+└── relate-work/                      # 论据/相关工作仓库（M1 写入，M3/M6 读取）
 ```
 
 ## 适用场景
@@ -47,6 +59,21 @@
 - 管理参考文献和引用格式
 - 生成论文大纲或润色段落
 - 检查实验设计完整性
+
+## 🙏 致谢
+
+本项目的**联网文献检索、期刊质量评估、BibTeX 生成**能力来自开源项目
+[**citation-assistant**](https://github.com/ZhangNy301/citation-assistant)。
+
+`script/paper/` 下的脚本（`paper_search.sh` / `venue_lookup.sh` / `author_info.sh` / `doi2bibtex.sh`）
+以及 `reference/` 中的 CCF 与影响因子数据库（`ccf_2026.sqlite` / `impact_factor.sqlite3`）
+均源自该项目，已根据本仓库的目录约定与八模块工作流做了路径与接口适配（多脚本合并、统一 `--mode` 参数、
+DATA_DIR 重定向到 `reference/`）。
+
+特别感谢：
+- [Semantic Scholar](https://www.semanticscholar.org/) 提供学术检索 API
+- [CrossRef](https://www.crossref.org/) 提供 DOI 元数据与 BibTeX 协商
+- [impact_factor](https://github.com/suqingdong/impact_factor) 提供期刊影响因子数据库
 
 ---
 

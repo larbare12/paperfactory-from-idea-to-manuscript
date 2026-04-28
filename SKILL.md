@@ -20,41 +20,49 @@ description: |
 
 本 Skill 旨在实现：**人只需提供 idea，论文全流程自动化**。
 
-### 八模块架构
+### 模块架构（M0 + M1–M7）
 
-基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 的八层提取法思想，设计八模块写作支持系统：
+基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 的八层提取法思想，重构后的工作流：M0 是横切的常驻模块，M1–M7 按"研究 → 写作 → 投稿"的真实顺序排列。
 
 | 模块 | 名称 | 功能 | 对应阶段 |
 |-----|------|------|---------|
-| **M1** | [选题诊断](modules/m1-topic.md) | 评估 idea 可行性、创新性、契合度 | 选题 |
-| **M2** | [结构规划](modules/m2-structure.md) | 生成 IMRAD 大纲、章节逻辑、篇幅分配 | 规划 |
-| **M3** | [论证设计](modules/m3-argument.md) | 设计核心论点、证据链、反驳预判 | 方法论 |
-| **M4** | [文献管理](modules/m4-literature.md) | 引用网络分析、关键文献识别、格式规范 | 文献综述 |
-| **M5** | [实验设计](modules/m5-experiment.md) | 实验方案检查、指标选择、对比方法建议 | 实验 |
-| **M6** | [写作辅助](modules/m6-writing.md) | 段落生成、语言润色、逻辑连贯性检查 | 撰写 |
-| **M7** | [评审模拟](modules/m7-review.md) | 模拟审稿人视角、预判问题、修改建议 | 修改 |
-| **M8** | [格式检查](modules/m8-format.md) | 期刊格式、参考文献、最终提交检查 | 投稿 |
+| **M0** | [项目仪表盘](modules/m0-dashboard.md) | 扫描 relate-work/ 与草稿，输出"已完成 / 待回填 / 阻塞"报表 | 横切（任何阶段可调） |
+| **M1** | [选题诊断](modules/m1-topic.md) | 用 bulk 搜索做数据驱动的可行性、创新性、契合度评估 | 选题 |
+| **M2** | [文献管理](modules/m2-literature.md) | 在 M1 沉淀的检索池上分类、精读、bib 整理 | 文献综述 |
+| **M3** | [实验设计](modules/m3-experiment.md) | 实验方案、指标、对比方法、消融、显著性检验 | 实验 |
+| **M4** | [结构规划](modules/m4-structure.md) | 实验完成后规划 IMRAD 骨架、篇幅、章节边界（**只管骨架，不管论证**） | 规划 |
+| **M5** | [论证设计](modules/m5-argument.md) | 论证主线、跨章节呼应、拒绝模式、反驳预判（**血肉**） | 方法论 |
+| **M6** | [写作辅助](modules/m6-writing.md) | 按 M5 论证骨架展开正文；relate-work 优先 + `[NEEDS-EVIDENCE]` 标记 | 撰写 |
+| **M7** | [投稿前总检](modules/m7-final-check.md) | A 内容红队（回扫 M3/M5）+ B 格式合规 + C rebuttal 撰写 | 修改 / 投稿 |
+
+> **变更说明**：旧的 8 模块（M1–M8）已重组为新的 1+7 架构。原 M2 结构与 M3 论证职责重叠，已分别瘦身为新 M4（只管骨架）和 M5（吸收所有论证内容）；原 M5 实验前移为 M3（实验先于结构和论证）；原 M7 评审 + M8 格式合并为 M7 投稿前总检；新增 M0 项目仪表盘负责横切的状态汇总。
 
 ## 使用方式
 
 ### 方式一：流程式（推荐新手）
-按顺序调用模块：
+按顺序调用模块（M0 横切，任何阶段都能查状态）：
 ```
-idea → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → 投稿
+idea → M1 → M2 → M3 → M4 → M5 → M6 → M7 → 投稿
+              ↑
+          M0 项目仪表盘（横切）
 ```
 
 ### 方式二：按需调用（推荐老手）
 根据当前卡点选择模块：
 - "我的选题可行吗？" → [M1](modules/m1-topic.md)
-- "不知道怎么组织论文" → [M2](modules/m2-structure.md)
-- "审稿人说论证不充分" → [M3](modules/m3-argument.md) + [M7](modules/m7-review.md)
-- "实验设计有问题" → [M5](modules/m5-experiment.md)
+- "不知道当前进度卡在哪儿" → [M0](modules/m0-dashboard.md)
+- "文献怎么组织、引用怎么管" → [M2](modules/m2-literature.md)
+- "实验设计有缺陷" → [M3](modules/m3-experiment.md)
+- "不知道怎么组织论文骨架" → [M4](modules/m4-structure.md)
+- "论证不充分 / 审稿人会怎么挑" → [M5](modules/m5-argument.md)
+- "下笔难、找不到论据" → [M6](modules/m6-writing.md)
+- "投稿前最后总检 / 写 rebuttal" → [M7](modules/m7-final-check.md)
 
 ### 方式三：全自动（终极目标）
 ```
 输入：idea + 数据
 ↓
-M1-M8 自动串联
+M1–M7 自动串联（M0 持续监控状态）
 ↓
 输出：可投稿论文
 ```
@@ -75,22 +83,22 @@ M1-M8 自动串联
 3. **穿插**：Related Work, Results, Discussion
 
 ### 投稿前检查清单
-- [ ] M1：选题经过诊断
-- [ ] M2：结构完整合理
-- [ ] M3：论证逻辑清晰
-- [ ] M4：文献引用规范
-- [ ] M5：实验充分完整
-- [ ] M6：语言润色完成
-- [ ] M7：评审问题预判
-- [ ] M8：格式符合要求
+- [ ] M0：仪表盘的 pending 列表为空
+- [ ] M1：选题经过数据驱动诊断（relate-work/ 已沉淀候选）
+- [ ] M2：文献分类完成、bib 规范
+- [ ] M3：实验充分完整（数据/对比/消融/显著性）
+- [ ] M4：章节骨架清晰、篇幅符合期刊
+- [ ] M5：论证主线完整、反驳预判已 preempt
+- [ ] M6：所有 [NEEDS-EVIDENCE] 已回填
+- [ ] M7：内容红队 + 格式合规 双双通过
 
 ## 详细规范
 
 ### 学术写作规范
-参见 [ACADEMIC-WRITING-GUIDE.md](refence/ACADEMIC-WRITING-GUIDE.md)
+参见 [ACADEMIC-WRITING-GUIDE.md](reference/ACADEMIC-WRITING-GUIDE.md)
 
 ### 论文写作指南
-参见 [PAPER-WRITING-GUIDE.md](refence/PAPER-WRITING-GUIDE.md)
+参见 [PAPER-WRITING-GUIDE.md](reference/PAPER-WRITING-GUIDE.md)
 
 ## 理论基础
 
