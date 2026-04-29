@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/larbare12/paper.skill/schemas/passport.json",
+  "title": "Material Passport",
+  "description": "Cross-stage state handoff object for paper.skill autonomous mode. Carries research metadata between M0–M7 modules so sessions can resume after context resets. Simplified from ARS Schema 9 — focused on fields the autonomous workflow actually needs.",
+  "type": "object",
+  "properties": {
+    "passport_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this passport instance (UUID or content hash)."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the passport was first created."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of the last modification."
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version string, e.g. \"0.1\". Increment when fields change."
+    },
+    "current_stage": {
+      "type": "string",
+      "enum": ["m0", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "done"],
+      "description": "Current pipeline stage. Modules read this to know where to resume."
+    },
+    "research_question": {
+      "type": "string",
+      "description": "The primary research question driving the paper."
+    },
+    "methodology": {
+      "type": "object",
+      "description": "Free-form methodology description. Shape is intentionally open for now.",
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Narrative description of the research methodology."
+        },
+        "design_type": {
+          "type": "string",
+          "description": "High-level design classification, e.g. \"experimental\", \"survey\", \"meta-analysis\"."
+        },
+        "data_source": {
+          "type": "string",
+          "description": "Primary data source(s) for the research."
+        }
+      },
+      "additionalProperties": true
+    },
+    "bibliography": {
+      "type": "array",
+      "description": "List of cited works with verification metadata for anti-hallucination tracking.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "BibTeX-style citation key, e.g. \"vaswani2017attention\"."
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the referenced work."
+          },
+          "authors": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Author names as strings."
+          },
+          "year": {
+            "type": "integer",
+            "description": "Publication year."
+          },
+          "doi": {
+            "type": "string",
+            "description": "Digital Object Identifier, if available."
+          },
+          "s2_id": {
+            "type": "string",
+            "description": "Semantic Scholar paper ID, if available."
+          },
+          "verification_status": {
+            "type": "string",
+            "enum": ["unverified", "verified", "doi_mismatch", "s2_not_found", "fabricated"],
+            "description": "Result of Tier 0/1/2 verification. unverified = not yet checked; verified = S2 API confirmed; doi_mismatch = DOI reverse-lookup failed; s2_not_found = S2 has no match; fabricated = total fabrication (TF)."
+          }
+        },
+        "required": ["key", "title", "authors", "year", "verification_status"],
+        "additionalProperties": false
+      }
+    },
+    "outline": {
+      "type": "object",
+      "description": "Paper outline: chapter keys map to arrays of section objects. Free-form for now.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "corpus": {
+      "type": "array",
+      "description": "Paths to local evidence files under relate-work/.",
+      "items": { "type": "string" }
+    },
+    "material_gaps": {
+      "type": "array",
+      "description": "Anti-leakage tracking: locations where no evidence was found and a [MATERIAL GAP] marker was placed.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "File and line or section where the gap was detected."
+          },
+          "description": {
+            "type": "string",
+            "description": "What claim or data point lacks evidence."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["open", "resolved", "accepted"],
+            "description": "open = gap still unfilled; resolved = evidence found; accepted = gap acknowledged as unavoidable."
+          }
+        },
+        "required": ["location", "description", "status"],
+        "additionalProperties": false
+      }
+    },
+    "argument_audit": {
+      "type": "array",
+      "description": "Devil's Advocate audit trail: each core claim must have DA attacks and rebuttal scores.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "description": "Unique identifier for the claim."
+          },
+          "claim_text": {
+            "type": "string",
+            "description": "The text of the claim being audited."
+          },
+          "da_attacks": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Devil's Advocate counter-arguments against this claim."
+          },
+          "rebuttal_score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Rebuttal strength 1-5. Concession only allowed when score >= 4."
+          },
+          "frame_lock_detected": {
+            "type": "boolean",
+            "description": "True if AI appears to be self-consolidating rather than genuinely reflecting."
+          }
+        },
+        "required": ["claim_id", "claim_text", "da_attacks", "rebuttal_score", "frame_lock_detected"],
+        "additionalProperties": false
+      }
+    },
+    "reset_boundary": {
+      "type": "object",
+      "description": "Checkpoint for session-reset recovery. Records a hash and the stage at which the passport was snapshotted.",
+      "properties": {
+        "hash": {
+          "type": "string",
+          "description": "Content hash of the passport at checkpoint time."
+        },
+        "stage_when_emitted": {
+          "type": "string",
+          "enum": ["m0", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "done"],
+          "description": "Pipeline stage when this checkpoint was created."
+        },
+        "can_resume_from": {
+          "type": "string",
+          "description": "The stage from which a new session should resume."
+        }
+      },
+      "required": ["hash", "stage_when_emitted", "can_resume_from"],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "passport_id",
+    "schema_version",
+    "current_stage",
+    "research_question"
+  ],
+  "additionalProperties": false
+}

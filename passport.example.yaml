@@ -1,0 +1,127 @@
+# Material Passport — Example
+# This file is committed as documentation showing every field with realistic placeholder values.
+# Working passport instances (passport.yaml, passport.*.yaml) are gitignored.
+
+passport_id: "550e8400-e29b-41d4-a716-446655440000"
+created_at: "2026-04-15T09:00:00Z"
+updated_at: "2026-04-22T14:30:00Z"
+schema_version: "0.1"
+current_stage: m5
+
+research_question: >
+  What lexical and syntactic patterns distinguish LLM-generated hallucinated
+  citations from authentic ones in peer-reviewed NLP literature?
+
+methodology:
+  description: >
+    Collect 500 LLM-generated citations across 5 models (GPT-4, Claude 3,
+    Llama 3, Gemini 1.5, Qwen 2.5), verify each against Semantic Scholar API,
+    classify hallucination types (TF/PAC/IH/PH/SH), train a logistic regression
+    on n-gram and dependency-parse features to predict hallucination class.
+  design_type: experimental
+  data_source: >
+    LLM API outputs (prompted with real paper abstracts) + Semantic Scholar
+    Academic Graph API for ground-truth verification
+
+bibliography:
+  - key: vaswani2017attention
+    title: "Attention Is All You Need"
+    authors:
+      - Ashish Vaswani
+      - Noam Shazeer
+      - Niki Parmar
+      - Jakob Uszkoreit
+      - Llion Jones
+      - Aidan N. Gomez
+      - Łukasz Kaiser
+      - Illia Polosukhin
+    year: 2017
+    doi: "10.48550/arXiv.1706.03762"
+    s2_id: "df7e184e67a8a3c2e8e1c1b2b3c4d5e6f7a8b9c0"
+    verification_status: verified
+
+  - key: ji2023hallucination
+    title: "Survey of Hallucination in Natural Language Generation"
+    authors:
+      - Ziwei Ji
+      - Nayeon Lee
+      - Rita Frieske
+      - Tiezheng Yu
+      - Dan Su
+      - Yan Xu
+      - Etsuko Ishii
+      - Yejin Bang
+      - Andrea Wong
+      - Alina Susanti
+      - Wei Zhao
+      - Tatiana von Landesberger
+    year: 2023
+    doi: "10.1145/3571730"
+    s2_id: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0"
+    verification_status: verified
+
+  - key: fakechen2024citation
+    title: "Automated Citation Quality Assessment Using Deep Learning"
+    authors:
+      - L. Chen
+      - M. Wang
+    year: 2024
+    doi: "10.1000/fake.journal.2024.0001"
+    verification_status: s2_not_found
+
+outline:
+  introduction:
+    - section: Background and Motivation
+    - section: Problem Statement
+    - section: Contributions
+  related_work:
+    - section: Hallucination in LLMs
+    - section: Citation Quality Metrics
+    - section: Detection Approaches
+  methodology:
+    - section: Data Collection Protocol
+    - section: Feature Engineering
+    - section: Classification Model
+  results:
+    - section: Hallucination Rate by Model
+    - section: Feature Importance Analysis
+    - section: Cross-Model Comparison
+  discussion:
+    - section: Implications for Academic Integrity
+    - section: Limitations
+  conclusion:
+    - section: Summary of Findings
+    - section: Future Work
+
+corpus:
+  - relate-work/search-llm-hallucination-20260416.json
+  - relate-work/ref-vaswani2017.md
+  - relate-work/ref-ji2023hallucination.md
+  - relate-work/note-citation-patterns.md
+
+material_gaps:
+  - location: "draft/results.tex:87 — Section 4.3 Cross-Model Comparison"
+    description: >
+      Missing GPT-4 Turbo baseline data; API quota exceeded during collection
+      window. Placeholder filled with interpolated values from GPT-3.5-turbo.
+    status: open
+
+argument_audit:
+  - claim_id: "CLM-001"
+    claim_text: >
+      LLMs with larger parameter counts produce more sophisticated hallucinations
+      (PAC and PH types) rather than total fabrications (TF).
+    da_attacks:
+      - "Parameter count confounds with training data cutoff date; newer models
+        may simply encounter fewer verifiable papers, inflating TF rates."
+      - "The TF classification itself is noisy — S2 API gaps can produce false
+        positives that look like total fabrications."
+      - "Corpus bias: the prompt set was drawn from pre-2023 NLP papers; results
+        may not generalize to other domains."
+    rebuttal_score: 4
+    frame_lock_detected: false
+
+reset_boundary:
+  hash: "a3f2b7c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5"
+  stage_when_emitted: m5
+  can_resume_from: m5
