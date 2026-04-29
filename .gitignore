@@ -1,0 +1,24 @@
+# 密钥与本地环境（注意：.env.example 应保留入库）
+.env
+.env.local
+
+# IDE / 编辑器
+.idea/
+.vscode/
+
+# Claude Code 本地设置
+.claude/
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.swp
+*~
+
+# Working passport — instance file (per-paper). passport.example.yaml is committed for reference.
+passport.yaml
+passport.*.yaml
+!passport.example.yaml
