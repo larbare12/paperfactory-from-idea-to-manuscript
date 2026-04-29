@@ -8,6 +8,31 @@
 > **流程位置**：M1 → M2 → M3 → M4 → M5 → **M6（本模块）** → M7 总检
 > 本模块按 [M5 论证设计](m5-argument.md) 产出的论证骨架展开正文，依据 [M4 结构规划](m4-structure.md) 的章节边界控制内容。
 
+## IRON RULE: Anti-Leakage Protocol
+
+> **IRON RULE — 不可违反**: 写作 agent 严禁用 parametric memory（模型预训练知识）填充任何事实空白。所有数据点、引用、统计数字、人物言论必须有 relate-work/ 中的本地证据或 find_evidence.sh 实时检索结果作为来源。
+
+### When evidence is missing
+
+遇到任何无法用 find_evidence.sh 找到证据的事实点，必须在草稿中插入 `[MATERIAL GAP: <一句话描述需要的证据类型>]` 标记。例如：
+
+- `[MATERIAL GAP: 需要 2024 年 LLM hallucination 在医学领域的实证 benchmark]`
+- `[MATERIAL GAP: 需要 GPT-4 vs Claude 在数学推理上的最新对比数据]`
+
+### Why this matters in autonomous mode
+
+Copilot 模式下用户每段都看，能当场抓出"AI 编了一个看起来合理的数字"。
+Autonomous 模式下用户只看终稿，编造的数字混在真实数字中**几乎不可能被察觉**。
+IRON RULE 的存在是为了**让缺证据的地方在终稿里显眼可见**，便于人类编辑回头补或删。
+
+### Enforcement
+
+- 写作过程中：agent 主动打标记，不许"略过"或"用相似数据替代"
+- 终稿前：自动脚本 `script/paper/check_material_gaps.sh` 扫描全文，发现 `[MATERIAL GAP]` 则拒绝输出 final draft
+- 解决方式：要么补上证据后删除标记，要么明确接受标记保留作为"待补"
+
+---
+
 ## 功能
 段落生成、语言润色、逻辑连贯性检查。
 **核心约束**：每提出一个 claim，必须先在 `relate-work/` 找到本地证据；找不到才回退到 `find_evidence.sh` 占位（当前未实现，自动标记 `[NEEDS-EVIDENCE]`）。
