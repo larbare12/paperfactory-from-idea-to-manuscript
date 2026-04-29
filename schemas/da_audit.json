@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/larbare12/paper.skill/schemas/da_audit.json",
+  "title": "Devil's Advocate Audit Record",
+  "description": "Per-claim DA exchange record. One instance per core claim per draft revision. Validates the anti-cascade-concession protocol output.",
+  "type": "object",
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "description": "Unique identifier for the core claim, e.g. claim-1"
+    },
+    "claim_text": {
+      "type": "string",
+      "description": "The original text of the core claim before DA attack"
+    },
+    "attack": {
+      "type": "object",
+      "description": "The DA agent's strongest counter-argument",
+      "properties": {
+        "counter_claim": {
+          "type": "string",
+          "description": "The counter-claim (one sentence)"
+        },
+        "supporting_evidence": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Evidence the counter-argument would cite"
+        },
+        "severity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Attack severity (1=observation, 5=fatal flaw)"
+        }
+      },
+      "required": ["counter_claim", "supporting_evidence", "severity"]
+    },
+    "rebuttal": {
+      "type": "object",
+      "description": "The agent's rebuttal of its own attack",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Rebuttal text"
+        },
+        "score": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Rebuttal score: 1=hand-wavy, 2=partial, 3=main-thrust-weaker, 4=comparable-stronger, 5=decisive"
+        },
+        "evidence_cited": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Evidence cited in the rebuttal"
+        }
+      },
+      "required": ["text", "score", "evidence_cited"]
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["keep", "soften", "drop"],
+      "description": "Concession decision: keep (score>=4), soften or drop (score<4)"
+    },
+    "softened_or_replacement_text": {
+      "type": "string",
+      "description": "Required when decision is 'soften' or 'drop'. The replacement or softened claim text."
+    },
+    "frame_lock_detected": {
+      "type": "boolean",
+      "description": "True if all rebuttals in this batch scored 5, indicating possible frame-lock"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of this DA exchange"
+    },
+    "draft_revision": {
+      "type": "string",
+      "pattern": "^rev-\\d+$",
+      "description": "Draft revision identifier, e.g. rev-3"
+    }
+  },
+  "required": [
+    "claim_id",
+    "claim_text",
+    "attack",
+    "rebuttal",
+    "decision",
+    "timestamp"
+  ],
+  "if": {
+    "properties": {
+      "decision": { "enum": ["soften", "drop"] }
+    }
+  },
+  "then": {
+    "required": ["softened_or_replacement_text"]
+  }
+}

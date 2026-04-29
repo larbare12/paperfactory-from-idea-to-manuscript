@@ -183,3 +183,87 @@ M2 已分类文献：[指向 relate-work/ref-*.md 列表]
 - 上游：[M3 实验设计](m3-experiment.md)（提供实验证据）、[M2 文献管理](m2-literature.md)（提供文献证据）、[M4 结构规划](m4-structure.md)（提供章节骨架）
 - 下游：[M6 写作辅助](m6-writing.md)（按论证骨架展开）、[M7 投稿前总检](m7-final-check.md)（回扫反驳预判）
 - 论据池：[`relate-work/`](../relate-work/)
+
+---
+
+## Devil's Advocate Pass (autonomous-mode mandatory)
+
+### 为什么 autonomous 模式下 DA 是强制项
+
+| 模式 | 论证强度兜底方 | DA 需求 |
+|---|---|---|
+| Copilot | 用户在每章稿子上反驳，论证强度由用户兜底 | 可选，用户充当 DA |
+| Autonomous | 没有用户反驳，AI 必须自己跟自己 argue | **强制**，无外部校验 |
+
+**经验事实**：autonomous AI 多轮自审会出现 **cascade concession**（连续让步）——论证逐轮软化，claim 越改越保守。DA 协议是反 cascade concession 的硬约束，不是可选的"审稿辅助"。
+
+### DA pass protocol
+
+对论文中每个 CORE CLAIM（通常 3-7 个）执行以下三轮：
+
+#### 1. Attack phase
+
+Agent 生成它能想到的最强反驳。输出：
+
+| 字段 | 说明 |
+|---|---|
+| counter_claim | 反方主张（一句话） |
+| supporting_evidence | 反方可引用的支撑证据列表 |
+| severity | 攻击严重度，1-5 整数（5 = 致命） |
+
+#### 2. Rebuttal phase
+
+Agent 反驳自己的攻击。输出：
+
+| 字段 | 说明 |
+|---|---|
+| text | 反驳正文 |
+| score | 反驳评分，1-5 整数（见下表） |
+| evidence_cited | 反驳中引用的证据列表 |
+
+**Rebuttal score 量表**：
+
+| Score | 定义 |
+|---|---|
+| **1** | hand-wavy，无新证据，纯断言 |
+| **2** | 部分回应，攻击的最强部分未回答 |
+| **3** | 回应了主力但不如攻击方证据强 |
+| **4** | 用相当或更强的证据回应了攻击 |
+| **5** | 决定性反驳——证明攻击基于错误前提 |
+
+#### 3. Concession decision
+
+- **Rebuttal score >= 4**：KEEP 该 claim，将 DA 交换记录写入审计
+- **Rebuttal score < 4**：CONCEDE——soften the claim / add a limitation / drop it
+- 每次 concession 必须记录：原始 claim 文本、rebuttal 文本、score
+
+### IRON RULES（不可违反）
+
+**No consecutive concessions**：如果 claim N 让步了，claim N+1 必须 NOT concede，除非 rebuttal score < 2（迫使 agent 在某处反击，防止连续软化）。
+
+**No frame-lock**：如果所有 rebuttal 都打 5 分（全部"决定性反驳"），说明 agent 没有真正尝试攻击（frame-lock：自我巩固而非反思）。阈值触发：换一个不同的 attack persona 重跑 DA。
+
+**Audit trail mandatory**：每次 DA 交换必须写入 `schemas/da_audit.json` 实例文件（按 schema 校验）。不允许静默让步。
+
+### 输出到 passport
+
+passport.yaml 的 `argument_audit` 数组，每个 core claim 一条：
+
+```yaml
+argument_audit:
+  - claim_id: "claim-1"
+    claim_text: "..."
+    da_attacks:
+      - counter_claim: "..."
+        supporting_evidence: ["..."]
+        severity: 4
+    rebuttal_score: 4
+    frame_lock_detected: false
+    decision: keep   # keep | soften | drop
+```
+
+### Limits
+
+- **Min 3 core claims** per paper（少于 3 个说明论证骨架不足）
+- **Max 7 core claims**（多于 7 个需拆分为 sub-claims，挂在 parent claim 下）
+- 每个 claim 每轮 draft revision 恰好执行 **一次** DA pass
