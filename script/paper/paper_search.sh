@@ -19,11 +19,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 # 加载配置
-if [[ -f "$PROJECT_ROOT/.env" ]]; then
-    set -a
-    source "$PROJECT_ROOT/.env"
-    set +a
-fi
+source "$SCRIPT_DIR/load_config.sh"
 
 # 解析参数
 QUERY=""
@@ -68,10 +64,10 @@ if ! [[ "$LIMIT" =~ ^[1-9][0-9]*$ ]]; then
     exit 1
 fi
 
-# year_range 仅对 bulk 模式有效
-if [[ -n "$YEAR_RANGE" && "$MODE" != "bulk" ]]; then
-    echo "{\"warning\": \"--year is only supported in --mode bulk; ignored\"}" >&2
-    YEAR_RANGE=""
+# standard 模式上限 100（swagger 硬约束）
+if [[ "$MODE" == "standard" && "$LIMIT" -gt 100 ]]; then
+    echo '{"error": "limit must be <= 100 for --mode standard; use --mode bulk for larger queries"}' >&2
+    exit 1
 fi
 
 ARXIV_THRESHOLD="${ARXIV_CITATION_THRESHOLD:-100}"
@@ -132,47 +128,29 @@ s2_rate_limit_wait() {
 # ---- 按 mode 分发 ----
 
 case "$MODE" in
-    standard|bulk)
+    standard)
         s2_rate_limit_wait
 
-        if [[ "$MODE" == "standard" ]]; then
-            API_URL="https://api.semanticscholar.org/graph/v1/paper/search"
-            FIELDS="paperId,title,year,authors,venue,journal,citationCount,externalIds,url,abstract"
-            PARAMS="query=${ENCODED_QUERY}&limit=${LIMIT}&fields=${FIELDS}"
-            CURL_TIMEOUT=30
-            RATE_LIMIT_HINT="Wait 1-2 seconds and retry, or use --mode bulk / --mode crossref"
-        else
-            API_URL="https://api.semanticscholar.org/graph/v1/paper/search/bulk"
-            FIELDS="title,year,authors,venue,journal,citationCount,externalIds,url,abstract"
-            PARAMS="query=${ENCODED_QUERY}&limit=${LIMIT}&fields=${FIELDS}"
-            [[ -n "$YEAR_RANGE" ]] && PARAMS="${PARAMS}&year=${YEAR_RANGE}"
-            CURL_TIMEOUT=60
-            RATE_LIMIT_HINT="Wait 60 seconds and retry"
-        fi
+        API_URL="${S2_BASE_URL}/graph/v1/paper/search"
+        FIELDS="paperId,title,year,authors,venue,journal,citationCount,externalIds,url,abstract"
+        PARAMS="query=${ENCODED_QUERY}&limit=${LIMIT}&fields=${FIELDS}"
+        [[ -n "$YEAR_RANGE" ]] && PARAMS="${PARAMS}&year=${YEAR_RANGE}"
 
         RESPONSE=$(curl -s -w "\n%{http_code}" \
             "${API_URL}?${PARAMS}" \
-            ${S2_API_KEY:+-H "x-api-key: $S2_API_KEY"} \
-            --max-time "$CURL_TIMEOUT" 2>/dev/null)
+            ${S2_API_KEY:+-H "$S2_API_KEY_HEADER: $S2_API_KEY"} \
+            --max-time 30 2>/dev/null)
 
         HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
         BODY=$(echo "$RESPONSE" | sed '$d')
 
         case "$HTTP_CODE" in
             200)
-                if [[ "$MODE" == "bulk" ]]; then
-                    TOTAL=$(echo "$BODY" | jq -r '.total // 0')
-                    RETURNED=$(echo "$BODY" | jq -r '.data | length')
-                    echo "{\"total\": $TOTAL, \"returned\": $RETURNED}" >&2
-                    echo "$BODY" | jq --arg threshold "$ARXIV_THRESHOLD" --argjson req_limit "$LIMIT" \
-                        ".data[:\$req_limit][]? | $S2_FORMAT_JQ"
-                else
-                    echo "$BODY" | jq --arg threshold "$ARXIV_THRESHOLD" \
-                        ".data[]? | $S2_FORMAT_JQ"
-                fi
+                echo "$BODY" | jq --arg threshold "$ARXIV_THRESHOLD" \
+                    ".data[]? | $S2_FORMAT_JQ"
                 ;;
             429)
-                echo "{\"error\": \"Rate limit exceeded. ${RATE_LIMIT_HINT}\"}" >&2
+                echo '{"error": "Rate limit exceeded. Wait 1-2 seconds and retry, or use --mode bulk / --mode crossref"}' >&2
                 exit 1
                 ;;
             *)
@@ -182,8 +160,80 @@ case "$MODE" in
         esac
         ;;
 
+    bulk)
+        # bulk 端点不接受 limit，最多每页 1000；用 token 分页直到拿够 LIMIT 或没下一页
+        # 注：每页落到临时文件而不是 shell 变量，否则 1000 篇 JSON 通过 --argjson
+        #     传给 jq 时会撑爆 Windows 32KB 命令行上限
+        API_URL="${S2_BASE_URL}/graph/v1/paper/search/bulk"
+        FIELDS="title,year,authors,venue,journal,citationCount,externalIds,url,abstract"
+
+        TMPDIR=$(mktemp -d)
+        trap 'rm -rf "$TMPDIR"' EXIT
+
+        TOKEN=""
+        PAGES=0
+        TOTAL_REPORTED=0
+        COLLECTED_LEN=0
+
+        while :; do
+            s2_rate_limit_wait
+
+            PAGE_PARAMS="query=${ENCODED_QUERY}&fields=${FIELDS}"
+            [[ -n "$YEAR_RANGE" ]] && PAGE_PARAMS="${PAGE_PARAMS}&year=${YEAR_RANGE}"
+            [[ -n "$TOKEN" ]]      && PAGE_PARAMS="${PAGE_PARAMS}&token=${TOKEN}"
+
+            RESPONSE=$(curl -s -w "\n%{http_code}" \
+                "${API_URL}?${PAGE_PARAMS}" \
+                ${S2_API_KEY:+-H "$S2_API_KEY_HEADER: $S2_API_KEY"} \
+                --max-time 60 2>/dev/null)
+
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+
+            case "$HTTP_CODE" in
+                200)
+                    PAGE_FILE="$TMPDIR/page_$(printf '%04d' "$PAGES").json"
+                    echo "$BODY" | jq '.data // []' > "$PAGE_FILE"
+                    PAGE_LEN=$(jq 'length' "$PAGE_FILE")
+                    COLLECTED_LEN=$((COLLECTED_LEN + PAGE_LEN))
+                    TOTAL_REPORTED=$(echo "$BODY" | jq -r '.total // 0')
+                    TOKEN=$(echo "$BODY" | jq -r '.token // ""')
+                    PAGES=$((PAGES + 1))
+                    ;;
+                429)
+                    if [[ $PAGES -gt 0 ]]; then
+                        echo "{\"warning\": \"Rate limit hit after ${PAGES} pages; returning partial results (${COLLECTED_LEN} papers)\"}" >&2
+                        break
+                    fi
+                    echo '{"error": "Rate limit exceeded. Wait 60 seconds and retry"}' >&2
+                    exit 1
+                    ;;
+                *)
+                    if [[ $PAGES -gt 0 ]]; then
+                        echo "{\"warning\": \"HTTP $HTTP_CODE after ${PAGES} pages; returning partial results (${COLLECTED_LEN} papers)\"}" >&2
+                        break
+                    fi
+                    echo "{\"error\": \"HTTP $HTTP_CODE: $(echo "$BODY" | jq -r '.message // .error // "Unknown error"')\"}" >&2
+                    exit 1
+                    ;;
+            esac
+
+            # 停机条件：够了 / 没下一页 / 这一页空了
+            [[ $COLLECTED_LEN -ge $LIMIT ]] && break
+            [[ -z "$TOKEN" ]]               && break
+            [[ $PAGE_LEN -eq 0 ]]           && break
+        done
+
+        echo "{\"total\": $TOTAL_REPORTED, \"returned\": $COLLECTED_LEN, \"pages\": $PAGES}" >&2
+        if [[ $PAGES -gt 0 ]]; then
+            jq -s 'add' "$TMPDIR"/page_*.json \
+                | jq --arg threshold "$ARXIV_THRESHOLD" --argjson req_limit "$LIMIT" \
+                    ".[:\$req_limit][]? | $S2_FORMAT_JQ"
+        fi
+        ;;
+
     crossref)
-        API_URL="https://api.crossref.org/works"
+        API_URL="${CROSSREF_BASE_URL}/works"
         FIELDS="DOI,title,author,published-print,published-online,container-title,is-referenced-by-count,URL"
 
         RESPONSE=$(curl -s \

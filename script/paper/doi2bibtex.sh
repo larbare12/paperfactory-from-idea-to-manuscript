@@ -6,6 +6,13 @@
 
 set -e
 
+# 初始化（脚本位置: <PROJECT_ROOT>/script/paper/）
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+
+# 加载配置
+source "$SCRIPT_DIR/load_config.sh"
+
 # 参数
 DOI="${1:-}"
 
@@ -21,7 +28,7 @@ DOI=$(echo "$DOI" | sed 's|https://doi.org/||g; s|http://doi.org/||g; s|doi.org/
 RESPONSE=$(curl -sL \
     -H "Accept: text/bibliography; style=bibtex" \
     -H "Accept-Language: en" \
-    "https://doi.org/${DOI}" \
+    "${DOI_BASE_URL}/${DOI}" \
     --max-time 30 2>/dev/null)
 
 # 检查响应

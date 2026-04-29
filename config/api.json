@@ -1,0 +1,16 @@
+{
+  "api": {
+    "semantic_scholar": {
+      "base_url": "https://s2api.ominiai.cn/s2",
+      "api_key_header": "Authorization",
+      "api_key_env_var": "S2_API_KEY",
+      "rate_limit_min_interval": 1
+    },
+    "crossref": {
+      "base_url": "https://api.crossref.org"
+    },
+    "doi": {
+      "base_url": "https://doi.org"
+    }
+  }
+}
