@@ -35,7 +35,7 @@ IRON RULE 的存在是为了**让缺证据的地方在终稿里显眼可见**，
 
 ## 功能
 段落生成、语言润色、逻辑连贯性检查。
-**核心约束**：每提出一个 claim，必须先在 `relate-work/` 找到本地证据；找不到才回退到 `find_evidence.sh` 占位（当前未实现，自动标记 `[NEEDS-EVIDENCE]`）。
+**核心约束**：每提出一个 claim，必须先在 `relate-work/` 找到本地证据；找不到才回退到 `find_evidence.sh`（corpus-first / search-fills-gap 流程）。
 
 ---
 
@@ -271,4 +271,124 @@ BERT        | Section 2.1      | Bidirectional Encoder Representations from Tran
 - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第2部分
 - 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/ACADEMIC-WRITING-GUIDE.md)
 - 本地论据池：[`relate-work/`](../relate-work/)
-- 占位检索脚本：[`script/paper/find_evidence.sh`](../script/paper/find_evidence.sh)（未实现）
+- 占位检索脚本：[`script/paper/find_evidence.sh`](../script/paper/find_evidence.sh)（已实现，corpus-first / search-fills-gap 流程）
+
+---
+
+## find_evidence.sh I/O Contract
+
+> **版本**: v0.3（autonomous-ready）
+> **流程**: corpus-first → search-fills-gap → merge & dedup → NDJSON output
+
+### CLI 签名
+
+```bash
+bash script/paper/find_evidence.sh "<claim 一句话>" \
+    [--topic <搜索主题>] \
+    [--limit <最大返回数量>] \
+    [--year-from <起始年份>] \
+    [--output <输出文件路径>]
+```
+
+### 参数说明
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+|------|------|------|--------|------|
+| 位置参数 | string | 是 | — | claim 文本，用于报告 |
+| `--topic` | string | 否 | = claim | 实际搜索关键词 |
+| `--limit` | int | 否 | 5 | 最多返回证据数量 |
+| `--year-from` | int | 否 | — | 起始年份过滤（传递给 S2 搜索） |
+| `--output` | path | 否 | stdout | 输出文件路径 |
+
+### 执行流程
+
+```
+输入 claim
+    ↓
+Step A. 检索 relate-work/ 本地语料库
+    ↓
+   ├─ 本地匹配数 >= limit → 输出本地结果，不调 S2
+   │
+   └─ 本地匹配数 < limit → Step B. 调用 paper_search.sh 补充
+                              ↓
+                             ├─ S2 成功 → 合并 + 去重 → 输出
+                             │
+                             └─ S2 失败 → 仅返回本地结果，stderr 记录 [S2-API-UNAVAILABLE]
+```
+
+### 匹配规则（本地语料库）
+
+- **文件名匹配**: 在 relate-work/ 的文件名中 case-insensitive grep topic
+- **内容匹配**: 在文件内容中 case-insensitive grep topic
+- **JSON 文件** (`search-*.json`): 逐条提取匹配的论文条目（title/abstract/venue 中包含 topic）
+- **Markdown 文件** (`note-*.md`, `ref-*.md`, `search-*.md`): 匹配整文件，提取 metadata
+- **score 分配**: 文件名匹配 = 0.6，内容匹配 = 0.3
+- **README.md 被排除**（仅为目录说明，非证据文件）
+
+### 输出 Schema（NDJSON，每行一个 JSON 对象）
+
+```json
+{
+  "source": "local" | "s2",
+  "title": "论文标题",
+  "authors": ["作者1", "作者2"],
+  "year": 2024,
+  "doi": "10.xxxx/xxxxx",
+  "match_score": 0.5,
+  "path_or_url": "relate-work/search-example.json 或 https://..."
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `source` | string | `"local"`（来自 relate-work/）或 `"s2"`（来自 Semantic Scholar API） |
+| `title` | string | 论文标题 |
+| `authors` | array | 作者列表（最多 5 个） |
+| `year` | int \| null | 发表年份 |
+| `doi` | string \| null | DOI 标识符 |
+| `match_score` | float | 匹配分数：local 文件名 0.6 / local 内容 0.3 / s2 默认 0.5 |
+| `path_or_url` | string | 本地文件相对路径或 S2 URL |
+
+### Exit Codes
+
+| 退出码 | 含义 | 输出 |
+|--------|------|------|
+| `0` | 成功找到证据 | stdout: NDJSON 结果 |
+| `2` | 任何地方都未找到证据 | stderr: 结构化错误 JSON |
+| `3` | S2 不可用但本地有结果 | stderr: `[S2-API-UNAVAILABLE]`，stdout: 本地 NDJSON |
+
+### 4 IRON RULES
+
+> 1. **同标准（Same Standard）**: 本地 corpus 和远程 S2 使用相同的检索标准。当本地有结果时，不得隐式放宽搜索条件。
+> 2. **不静默跳过（No Silent Skip）**: 如果任何地方都找不到证据，必须以 exit code 2 退出并输出结构化错误 JSON，绝不得 exit 0 + 空结果。
+> 3. **不变更数据（No Mutation）**: 绝不修改 relate-work/ 目录中的任何文件（只读访问）。
+> 4. **优雅降级（Graceful Degradation）**: 如果 S2 API 失败（网络、限速、5xx），降级为仅本地搜索并在 stderr 记录 `[S2-API-UNAVAILABLE]`，绝不使整个管线崩溃。
+
+### 示例
+
+```bash
+# 基础用法：搜索 claim 的支撑证据
+bash script/paper/find_evidence.sh "ViT outperforms ResNet-50 on ImageNet"
+
+# 指定搜索主题和数量限制
+bash script/paper/find_evidence.sh "LLMs produce hallucinated citations" \
+    --topic "large language model hallucination" --limit 3
+
+# 加年份过滤，输出到文件
+bash script/paper/find_evidence.sh "sparse attention reduces complexity" \
+    --year-from 2020 --output relate-work/evidence-sparse-attn.ndjson
+
+# 完整参数
+bash script/paper/find_evidence.sh "claim text" \
+    --topic "search query" --limit 5 --year-from 2022 --output results.ndjson
+```
+
+### 失败场景行为
+
+| 场景 | 行为 | Exit Code |
+|------|------|-----------|
+| 本地 0 匹配 + S2 成功 | 输出 S2 结果 | 0 |
+| 本地 0 匹配 + S2 失败 | 结构化错误 JSON → stderr | 2 |
+| 本地 N 匹配 + S2 成功 | 合并去重后输出 | 0 |
+| 本地 N 匹配 + S2 失败 | 仅输出本地结果 + [S2-API-UNAVAILABLE] | 0 |
+| 本地 0 匹配 + 无 S2 调用（已足够） | 结构化错误 JSON → stderr | 2 |
