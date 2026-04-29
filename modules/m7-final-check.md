@@ -197,3 +197,9 @@ C. （投稿后）按收到的审稿意见生成 rebuttal 草稿
 - [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md)
 - BibTeX 工具：[`script/paper/doi2bibtex.sh`](../script/paper/doi2bibtex.sh)
 - 上游：[M0 仪表盘](m0-dashboard.md) / [M3 实验](m3-experiment.md) / [M5 论证](m5-argument.md) / [M6 写作](m6-writing.md)
+
+## Passport I/O
+
+- **Reads**: _all fields_ — `current_stage` (must be m6 to enter), `research_question`, `methodology`, `bibliography[]` (ref format + completeness via B.5), `outline` (chapter checklist via B.1), `corpus[]` (evidence file verification), `material_gaps[]` (must be empty or all "accepted" to proceed), `argument_audit[]` (rebuttal preempt scan via A.1), `reset_boundary` (checkpoint hash before final submission)
+- **Writes**: `current_stage` → `done` (only if all A/B segments pass; any failure blocks this transition and routes back to the responsible module), `material_gaps[]` (may mark newly discovered gaps during red-team scan)
+- **Stage transition**: advances passport to `current_stage = done` (paper is submission-ready; all claims audited, all formats compliant, all material gaps resolved or accepted)

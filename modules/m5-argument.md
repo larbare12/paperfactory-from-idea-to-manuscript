@@ -267,3 +267,9 @@ argument_audit:
 - **Min 3 core claims** per paper（少于 3 个说明论证骨架不足）
 - **Max 7 core claims**（多于 7 个需拆分为 sub-claims，挂在 parent claim 下）
 - 每个 claim 每轮 draft revision 恰好执行 **一次** DA pass
+
+## Passport I/O
+
+- **Reads**: `research_question` (main claim source), `outline` (M4 chapter structure for cross-chapter呼应), `bibliography[]` (M2 literature evidence), `corpus[]` (M3 experiment results as evidence)
+- **Writes**: `argument_audit[]` (DA pass records: claim_id, claim_text, da_attacks[], rebuttal_score, frame_lock_detected, decision), `current_stage` → `m5`
+- **Stage transition**: advances passport to `current_stage = m5` (argument backbone is audited and every core claim has a DA exchange with score >= 4 or a recorded concession)

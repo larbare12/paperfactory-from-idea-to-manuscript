@@ -138,3 +138,9 @@ M3 实验结果概要：[填入]
 - [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第1.2节
 - 论证逻辑设计：[M5 论证设计](m5-argument.md)
 - 写作执行：[M6 写作辅助](m6-writing.md)
+
+## Passport I/O
+
+- **Reads**: `research_question`, `methodology`, `bibliography[]`, `corpus[]` (M3 experiment result paths inform which chapters have content)
+- **Writes**: `outline` (chapter keys with section arrays + word count allocation), `current_stage` → `m4`
+- **Stage transition**: advances passport to `current_stage = m4` (paper skeleton with IMRAD chapter structure and section boundaries is now defined)

@@ -196,3 +196,9 @@ Baseline 方法：[从 M2 的对比文献分类粘贴]
 - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第4部分
 - 上游：M2 文献管理（提供对比文献清单）
 - 下游：M5 论证设计（消费实验结果构建证据链）、M7 投稿前总检（回扫缺陷清单）
+
+## Passport I/O
+
+- **Reads**: `research_question` (hypothesis to validate), `methodology` (design_type + data_source guide experiment setup), `bibliography[]` (M2 comparative baselines)
+- **Writes**: `methodology.description` (enriched with experimental design details), `methodology.data_source` (concretized to actual datasets used), `corpus[]` (experiment result file paths), `current_stage` → `m3`
+- **Stage transition**: advances passport to `current_stage = m3` (experimental evidence is now available for M4/M5 to build upon)
