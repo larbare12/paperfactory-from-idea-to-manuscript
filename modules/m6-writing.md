@@ -392,3 +392,9 @@ bash script/paper/find_evidence.sh "claim text" \
 | 本地 N 匹配 + S2 成功 | 合并去重后输出 | 0 |
 | 本地 N 匹配 + S2 失败 | 仅输出本地结果 + [S2-API-UNAVAILABLE] | 0 |
 | 本地 0 匹配 + 无 S2 调用（已足够） | 结构化错误 JSON → stderr | 2 |
+
+## Passport I/O
+
+- **Reads**: `outline` (chapter-by-chapter writing targets), `bibliography[]` (cite keys for in-text citations), `argument_audit[]` (M5 claim positions to embed in prose), `corpus[]` (evidence files for the anti-leakage protocol)
+- **Writes**: `material_gaps[]` (each `[MATERIAL GAP: ...]` marker inserted when evidence is missing), `current_stage` → `m6`
+- **Stage transition**: advances passport to `current_stage = m6` (draft prose is written with all claims either evidence-backed or explicitly marked as material gaps)

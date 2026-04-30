@@ -122,3 +122,9 @@ bash script/paper/paper_search.sh "<idea 关键词组合>" \
 - 搜索脚本：[`script/paper/paper_search.sh`](../script/paper/paper_search.sh)（bulk/standard/crossref 三模式）
 - 期刊查询：[`script/paper/venue_lookup.sh`](../script/paper/venue_lookup.sh)（CCF + IF）
 - 本地论文池：[`relate-work/`](../relate-work/)（M1 写入、M3/M6 读取）
+
+## Passport I/O
+
+- **Reads**: `research_question` (the idea to diagnose), `corpus[]` (existing evidence files, if any)
+- **Writes**: `research_question` (refined and scoped after diagnosis), `methodology.description`, `methodology.data_source`, `current_stage` → `m1`, `corpus[]` (new search result paths like `relate-work/search-<slug>-*.json`)
+- **Stage transition**: advances passport to `current_stage = m1` (entry point of the pipeline; bootstrap from an initial idea to a diagnosed research question)

@@ -258,3 +258,9 @@ Tier 2（手工 fallback）: WebSearch 抽样 --> Google/Bing 搜索标题
 | Author ID 比对 | 未自动化同名作者消歧 | TODO: 加入领域作者白名单 |
 | 非 S2 索引 | 中文/灰色文献可能不在 S2 中 | `S2_NOT_FOUND` 不自动判定为幻觉，需 Tier 1+2 |
 
+## Passport I/O
+
+- **Reads**: `research_question` (guides literature scope), `corpus[]` (M1 search result paths to ingest), `bibliography[]` (existing entries for incremental enrichment)
+- **Writes**: `bibliography[]` (populated with verified entries: key/title/authors/year/doi/s2_id/verification_status), `corpus[]` (new ref-*.md card paths), `material_gaps[]` (identified citation gaps that trigger a return to M1), `current_stage` → `m2`
+- **Stage transition**: advances passport to `current_stage = m2` (bibliography and corpus are now populated from raw M1 search results)
+
