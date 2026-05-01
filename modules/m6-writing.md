@@ -272,6 +272,12 @@ BERT        | Section 2.1      | Bidirectional Encoder Representations from Tran
 - 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/ACADEMIC-WRITING-GUIDE.md)
 - 本地论据池：[`relate-work/`](../relate-work/)
 - 占位检索脚本：[`script/paper/find_evidence.sh`](../script/paper/find_evidence.sh)（已实现，corpus-first / search-fills-gap 流程）
+- ARS: [学术写作风格](../reference/ars/paper/academic_writing_style.md) — 英语学术写作语气与风格指南
+- ARS: [写作质量检查](../reference/ars/paper/writing_quality_check.md) — 终稿前写作质量自检清单
+- ARS: [写作判断框架](../reference/ars/paper/writing_judgment_framework.md) — 写作质量多维评估
+- ARS: [摘要写作指南](../reference/ars/paper/abstract_writing_guide.md) — 双语摘要撰写规范
+- ARS: [风格校准协议](../reference/ars/shared/style_calibration_protocol.md) — 从历史论文学习作者写作风格
+- 模板：[双语摘要](../templates/bilingual_abstract_template.md) / [修改追踪](../templates/revision_tracking_template.md)
 
 ---
 

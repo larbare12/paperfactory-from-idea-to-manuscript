@@ -183,6 +183,9 @@ M2 已分类文献：[指向 relate-work/ref-*.md 列表]
 - 上游：[M3 实验设计](m3-experiment.md)（提供实验证据）、[M2 文献管理](m2-literature.md)（提供文献证据）、[M4 结构规划](m4-structure.md)（提供章节骨架）
 - 下游：[M6 写作辅助](m6-writing.md)（按论证骨架展开）、[M7 投稿前总检](m7-final-check.md)（回扫反驳预判）
 - 论据池：[`relate-work/`](../relate-work/)
+- ARS: [论证推理框架](../reference/ars/deep-research/argumentation_reasoning_framework.md) — Toulmin/Walton 论证模型详解
+- ARS: [逻辑谬误目录](../reference/ars/deep-research/logical_fallacies.md) — DA 攻击时的常见逻辑谬误清单
+- ARS: [AI 研究失败模式](../reference/ars/pipeline/ai_research_failure_modes.md) — AI 辅助写作的高频失败模式（Lu et al., 2026, Nature）
 
 ---
 
