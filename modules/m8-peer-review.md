@@ -2,9 +2,9 @@
 
 > **理论基础**：
 > - 基于 ARS academic-paper-reviewer skill（7 agents, 6 modes）
-> - 参见 [审稿标准框架](../reference/ars/reviewer/review_criteria_framework.md)
-> - 参见 [审稿质量思维](../reference/ars/reviewer/review_quality_thinking.md)
-> - 参见 [编辑决策标准](../reference/ars/reviewer/editorial_decision_standards.md)
+> - 参见 [审稿标准框架](../reference/review/review_criteria_framework.md)
+> - 参见 [审稿质量思维](../reference/review/review_quality_thinking.md)
+> - 参见 [编辑决策标准](../reference/review/editorial_decision_standards.md)
 
 ## 功能
 投稿前模拟同行评审：从多个视角审视论文，生成审稿报告、编辑决策建议、修改路线图。
@@ -186,11 +186,11 @@ M3 实验记录：[路径]
 ---
 
 ## 参考资源
-- ARS: [审稿标准框架](../reference/ars/reviewer/review_criteria_framework.md)
-- ARS: [审稿质量思维](../reference/ars/reviewer/review_quality_thinking.md)
-- ARS: [编辑决策标准](../reference/ars/reviewer/editorial_decision_standards.md)
-- ARS: [质量评估 rubrics](../reference/ars/reviewer/quality_rubrics.md)
-- ARS: [各领域顶级期刊](../reference/ars/reviewer/top_journals_by_field.md)
+- ARS: [审稿标准框架](../reference/review/review_criteria_framework.md)
+- ARS: [审稿质量思维](../reference/review/review_quality_thinking.md)
+- ARS: [编辑决策标准](../reference/review/editorial_decision_standards.md)
+- ARS: [质量评估 rubrics](../reference/review/quality_rubrics.md)
+- ARS: [各领域顶级期刊](../reference/review/top_journals_by_field.md)
 - 模板：[同行评审报告](../templates/peer_review_report_template.md) / [编辑决策](../templates/editorial_decision_template.md) / [修改回复](../templates/revision_response_template.md)
 
 ## Passport I/O

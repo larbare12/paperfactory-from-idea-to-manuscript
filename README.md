@@ -64,18 +64,16 @@
 │   ├── m7-final-check.md             # 投稿前总检
 │   ├── m8-peer-review.md             # 同行评审仿真（新）
 │   └── m9-compliance-check.md        # 合规与伦理检查（新）
-├── reference/                        # 写作规范 + 期刊数据库 + ARS 资料
-│   ├── ACADEMIC-WRITING-GUIDE.md     # 学术写作规范
-│   ├── PAPER-WRITING-GUIDE.md        # 论文写作指南
-│   ├── ccf_2026.sqlite               # CCF 分级数据
+├── reference/                        # 按主题组织的参考资料库
+│   ├── writing/                       # 写作风格、语言、格式指南（15 文件）
+│   ├── research/                      # 研究方法论、文献管理、实验设计（12 文件）
+│   ├── review/                        # 同行评审、质量评估（9 文件）
+│   ├── compliance/                    # 伦理、PRISMA-trAIce、RAISE、AI 披露（11 文件）
+│   ├── handoff_schemas.md             # 跨阶段数据契约
+│   ├── mode_spectrum.md               # 保真度 vs 原创性频谱
+│   ├── ccf_2026.sqlite                # CCF 分级数据
 │   ├── ccf_2026.jsonl
-│   ├── impact_factor.sqlite3         # 影响因子数据库
-│   └── ars/                          # ARS 参考资料（46 文件）
-│       ├── deep-research/            # 研究方法论（13 文件）
-│       ├── paper/                    # 写作与投稿（12 文件）
-│       ├── reviewer/                 # 同行评审（6 文件）
-│       ├── pipeline/                 # 流程与诚信（6 文件）
-│       └── shared/                   # 共享协议与框架（10 文件）
+│   └── impact_factor.sqlite3          # 影响因子数据库
 ├── templates/                        # 结构化输出模板（15 文件，新）
 │   ├── imrad_template.md
 │   ├── conference_paper_template.md
@@ -112,7 +110,7 @@
 以及 CCF 与影响因子数据库均源自该项目。
 
 ### academic-research-skills (ARS)
-**M8/M9 模块设计及 reference/ars/ 与 templates/ 中的 61 个参考文件和模板**
+**M8/M9 模块设计及 reference/ 与 templates/ 中的 62 个参考文件和模板**
 来自 [**academic-research-skills**](https://github.com/) 项目（Cheng-I Wu, CC-BY-NC 4.0）。
 包括 PRISMA-trAIce 协议、RAISE 框架、多视角审稿人模型、APA 7 风格指南、
 逻辑谬误目录、学术写作风格指南等参考资料。

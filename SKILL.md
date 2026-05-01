@@ -37,7 +37,7 @@ description: |
 | **M8** | [同行评审仿真](modules/m8-peer-review.md) | 多视角审稿模拟（领域/方法/专家/跨领域/DA）+ 编辑决策 + 修改路线图 | 评审 |
 | **M9** | [合规与伦理检查](modules/m9-compliance-check.md) | PRISMA-trAIce 17 项 + RAISE 五维度 + AI 披露 + 最终门控 | 合规 / 投稿 |
 
-> **v0.3 变更说明**：扩展为 M0-M9 十模块架构。新增 M8（同行评审仿真，整合 ARS academic-paper-reviewer 的 5 审稿人模型）和 M9（合规与伦理检查，整合 ARS compliance agent 的 PRISMA-trAIce + RAISE 双框架）。M1-M7 增强了对 ARS 参考资料的引用。新增 `templates/` 目录（15 个模板）和 `reference/ars/` 目录（46 个参考资料）。
+> **v0.3 变更说明**：扩展为 M0-M9 十模块架构。新增 M8（同行评审仿真，整合 ARS academic-paper-reviewer 的 5 审稿人模型）和 M9（合规与伦理检查，整合 ARS compliance agent 的 PRISMA-trAIce + RAISE 双框架）。M1-M7 增强了对参考资料库的引用。新增 `templates/` 目录（15 个模板）和 `reference/` 下按主题重组为 writing/research/review/compliance 四个子目录（47 个参考资料）。
 
 ## 使用方式
 
@@ -133,7 +133,7 @@ M1–M7 自动串联（M0 持续监控状态）
 - ✅ 基于学术规范的质量检查清单
 - ✅ 多视角同行评审仿真（M8）
 - ✅ PRISMA-trAIce + RAISE 合规检查（M9）
-- ✅ 46 个 ARS 参考资料（reference/ars/）
+- ✅ 47 个参考资料（reference/ 下按主题分 writing/research/review/compliance）
 - ✅ 15 个结构化输出模板（templates/）
 - ✅ 可执行脚本（搜索、引用验证、证据查找）
 

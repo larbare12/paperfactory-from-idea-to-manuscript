@@ -2,9 +2,9 @@
 
 > **理论基础**：
 > - 基于 ARS shared compliance agent（PRISMA-trAIce + RAISE）
-> - 参见 [PRISMA-trAIce 协议](../reference/ars/shared/prisma_trAIce_protocol.md)
-> - 参见 [RAISE 框架](../reference/ars/shared/raise_framework.md)
-> - 参见 [合规检查点协议](../reference/ars/shared/compliance_checkpoint_protocol.md)
+> - 参见 [PRISMA-trAIce 协议](../reference/compliance/prisma_trAIce_protocol.md)
+> - 参见 [RAISE 框架](../reference/compliance/raise_framework.md)
+> - 参见 [合规检查点协议](../reference/compliance/compliance_checkpoint_protocol.md)
 
 ## 功能
 投稿前最终合规门控：检查 AI 使用透明性、伦理合规、数据隐私、可复现性、学术诚信。
@@ -66,32 +66,32 @@
 - [ ] 方法描述是否足够详细可复现？
 - [ ] 超参数和随机种子是否报告？
 - [ ] 硬件和软件环境是否说明？
-- **参见**: [artifact_reproducibility_pattern.md](../reference/ars/shared/artifact_reproducibility_pattern.md)
+- **参见**: [artifact_reproducibility_pattern.md](../reference/compliance/artifact_reproducibility_pattern.md)
 
 ### B.2 可追责性 (Accountability)
 - [ ] AI 辅助内容是否有明确的负责人？
 - [ ] 通讯作者是否对全稿负责？
 - [ ] 作者贡献是否按 CRediT 标准声明？
-- **参见**: [credit_authorship_guide.md](../reference/ars/paper/credit_authorship_guide.md)
+- **参见**: [credit_authorship_guide.md](../reference/writing/credit_authorship_guide.md)
 
 ### B.3 诚信 (Integrity)
 - [ ] 引用是否经过 Tier 0 验证？（运行 `verify_citations.sh`）
 - [ ] 数据是否未篡改？
 - [ ] 图表是否未被美化到误导程度？
 - [ ] 实验结果是否全部报告（不选择性报告）？
-- **参见**: [plagiarism_detection_protocol.md](../reference/ars/pipeline/plagiarism_detection_protocol.md)
+- **参见**: [plagiarism_detection_protocol.md](../reference/compliance/plagiarism_detection_protocol.md)
 
 ### B.4 安全 (Safety)
 - [ ] 研究是否涉及敏感数据？（如有，是否合规处理？）
 - [ ] 研究是否涉及人类受试者？（如有，是否有 IRB 审批？）
 - [ ] 研究成果是否可能被滥用？（如有，是否有 mitigations？）
-- **参见**: [ethics_checklist.md](../reference/ars/deep-research/ethics_checklist.md)
+- **参见**: [ethics_checklist.md](../reference/compliance/ethics_checklist.md)
 
 ### B.5 伦理 (Ethics)
 - [ ] 是否遵守了目标期刊的伦理政策？
 - [ ] 是否获取了必要的数据使用许可？
 - [ ] 是否考虑了研究的公平性和包容性？
-- **参见**: [irb_decision_tree.md](../reference/ars/deep-research/irb_decision_tree.md)
+- **参见**: [irb_decision_tree.md](../reference/compliance/irb_decision_tree.md)
 
 ---
 
@@ -171,17 +171,17 @@ D. 输出门控状态（PASS / WARN / BLOCK）
 ---
 
 ## 参考资源
-- ARS: [PRISMA-trAIce 协议](../reference/ars/shared/prisma_trAIce_protocol.md) — AI 研究 17 项完整清单
-- ARS: [RAISE 框架](../reference/ars/shared/raise_framework.md) — 五维度学术诚信框架
-- ARS: [合规检查点协议](../reference/ars/shared/compliance_checkpoint_protocol.md) — 双门控机制详解
-- ARS: [跨模型验证](../reference/ars/shared/cross_model_verification.md) — 可选的多模型交叉验证
-- ARS: [伦理检查清单](../reference/ars/deep-research/ethics_checklist.md)
-- ARS: [IRB 决策树](../reference/ars/deep-research/irb_decision_tree.md)
-- ARS: [作者署名指南](../reference/ars/paper/credit_authorship_guide.md)
-- ARS: [资助声明指南](../reference/ars/paper/funding_statement_guide.md)
-- ARS: [期刊披露政策](../reference/ars/paper/venue_disclosure_policies.md)
-- ARS: [剽窃检测协议](../reference/ars/pipeline/plagiarism_detection_protocol.md)
-- ARS: [可复现性审计](../reference/ars/pipeline/reproducibility_audit.md)
+- ARS: [PRISMA-trAIce 协议](../reference/compliance/prisma_trAIce_protocol.md) — AI 研究 17 项完整清单
+- ARS: [RAISE 框架](../reference/compliance/raise_framework.md) — 五维度学术诚信框架
+- ARS: [合规检查点协议](../reference/compliance/compliance_checkpoint_protocol.md) — 双门控机制详解
+- ARS: [跨模型验证](../reference/compliance/cross_model_verification.md) — 可选的多模型交叉验证
+- ARS: [伦理检查清单](../reference/compliance/ethics_checklist.md)
+- ARS: [IRB 决策树](../reference/compliance/irb_decision_tree.md)
+- ARS: [作者署名指南](../reference/writing/credit_authorship_guide.md)
+- ARS: [资助声明指南](../reference/writing/funding_statement_guide.md)
+- ARS: [期刊披露政策](../reference/writing/venue_disclosure_policies.md)
+- ARS: [剽窃检测协议](../reference/compliance/plagiarism_detection_protocol.md)
+- ARS: [可复现性审计](../reference/compliance/reproducibility_audit.md)
 
 ## Passport I/O
 

@@ -197,15 +197,15 @@ C. （投稿后）按收到的审稿意见生成 rebuttal 草稿
 - [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md)
 - BibTeX 工具：[`script/paper/doi2bibtex.sh`](../script/paper/doi2bibtex.sh)
 - 上游：[M0 仪表盘](m0-dashboard.md) / [M3 实验](m3-experiment.md) / [M5 论证](m5-argument.md) / [M6 写作](m6-writing.md)
-- ARS: [质量评估 rubrics](../reference/ars/reviewer/quality_rubrics.md) — 论文质量多维度评分标准
-- ARS: [审稿标准框架](../reference/ars/reviewer/review_criteria_framework.md) — 期刊审稿 criteria 完整框架
-- ARS: [编辑决策标准](../reference/ars/reviewer/editorial_decision_standards.md) — 编辑视角的接收/修改/拒绝决策
-- ARS: [期刊投稿指南](../reference/ars/paper/journal_submission_guide.md) — 各期刊投稿流程与要求
-- ARS: [剽窃检测协议](../reference/ars/pipeline/plagiarism_detection_protocol.md) — 文本原创性检查
-- ARS: [常见失败路径](../reference/ars/paper/failure_paths.md) — 投稿被拒的高频失败模式
-- ARS: [作者署名指南](../reference/ars/paper/credit_authorship_guide.md) — 作者贡献声明规范
-- ARS: [资助声明指南](../reference/ars/paper/funding_statement_guide.md) — 资助信息披露规范
-- ARS: [期刊披露政策](../reference/ars/paper/venue_disclosure_policies.md) — 各期刊 AI 使用披露要求
+- ARS: [质量评估 rubrics](../reference/review/quality_rubrics.md) — 论文质量多维度评分标准
+- ARS: [审稿标准框架](../reference/review/review_criteria_framework.md) — 期刊审稿 criteria 完整框架
+- ARS: [编辑决策标准](../reference/review/editorial_decision_standards.md) — 编辑视角的接收/修改/拒绝决策
+- ARS: [期刊投稿指南](../reference/writing/journal_submission_guide.md) — 各期刊投稿流程与要求
+- ARS: [剽窃检测协议](../reference/compliance/plagiarism_detection_protocol.md) — 文本原创性检查
+- ARS: [常见失败路径](../reference/review/failure_paths.md) — 投稿被拒的高频失败模式
+- ARS: [作者署名指南](../reference/writing/credit_authorship_guide.md) — 作者贡献声明规范
+- ARS: [资助声明指南](../reference/writing/funding_statement_guide.md) — 资助信息披露规范
+- ARS: [期刊披露政策](../reference/writing/venue_disclosure_policies.md) — 各期刊 AI 使用披露要求
 - 模板：[同行评审报告](../templates/peer_review_report_template.md) / [编辑决策](../templates/editorial_decision_template.md) / [修改回复](../templates/revision_response_template.md)
 
 ## Passport I/O
