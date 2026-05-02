@@ -157,6 +157,11 @@
 - 期刊质量：[`script/paper/venue_lookup.sh`](../script/paper/venue_lookup.sh)
 - 作者 H-index：[`script/paper/author_info.sh`](../script/paper/author_info.sh)
 - 文献仓库：[`relate-work/`](../relate-work/)
+- ARS: [文献来源质量层级](../reference/research/source_quality_hierarchy.md) — 引用质量评估体系
+- ARS: [系统综述工具包](../reference/research/systematic_review_toolkit.md) — PRISMA 2020 系统综述方法
+- ARS: [文献监控策略](../reference/research/literature_monitoring_strategies.md) — 持续文献追踪
+- ARS: [引用格式切换器](../reference/writing/citation_format_switcher.md) — 多格式引文转换
+- ARS: [Claim 验证协议](../reference/review/claim_verification_protocol.md) — 文献 claim 交叉验证
 
 ---
 

@@ -1,0 +1,200 @@
+# M8 同行评审仿真模块
+
+> **理论基础**：
+> - 基于 ARS academic-paper-reviewer skill（7 agents, 6 modes）
+> - 参见 [审稿标准框架](../reference/review/review_criteria_framework.md)
+> - 参见 [审稿质量思维](../reference/review/review_quality_thinking.md)
+> - 参见 [编辑决策标准](../reference/review/editorial_decision_standards.md)
+
+## 功能
+投稿前模拟同行评审：从多个视角审视论文，生成审稿报告、编辑决策建议、修改路线图。
+
+> **流程位置**：M7 总检（段 A 内容红队）→ **M8 同行评审（本模块）** → M9 合规检查 → 投稿
+>
+> M7 的红队检查是逐条的、清单式的。M8 在此基础上做**整体评审**——模拟真实审稿人的完整审稿流程。
+>
+> **注意**：本模块不是 M7 的替代，而是其**补充**。M7 检查具体问题（格式、by-item rebuttal），M8 做综合性评审。
+
+## 核心理念
+
+学术论文的同行评审需要从多个角度审视：
+- **领域分析师**：检查论文在领域中的定位和贡献
+- **方法论审稿人**：深入检查方法的正确性和可复现性
+- **领域专家审稿人**：从专业角度评估论文的深度和准确性
+- **跨领域审稿人**：评估论文的清晰度和可理解性
+- **魔鬼代言人**：主动寻找论证中的漏洞
+
+## 输入
+- 终稿 PDF/源文件（来自 M6）
+- M5 论证审计记录（来自 passport `argument_audit[]`）
+- M3 实验记录
+- 目标期刊/会议的审稿 criteria
+
+## 输出
+- 多视角审稿报告（5 份）
+- 编辑决策建议（Accept / Minor / Major / Reject）
+- 修改路线图（按优先级排序的修改项）
+- 修改回复草稿模板
+
+## 使用场景
+1. 投稿前最终自我审查
+2. 准备应对审稿人可能的质疑
+3. 模拟不同视角的审稿意见
+4. 为实际修改准备路线图
+
+---
+
+## 评审模式
+
+### Mode 1: 完整评审（推荐投稿前使用）
+5 个视角的审稿人 + 编辑综合决策 + 修改路线图
+
+### Mode 2: 快速评审（15 分钟）
+仅编辑视角的快速评估，适合初筛
+
+### Mode 3: 方法论聚焦
+深入审查方法部分的可复现性和正确性
+
+### Mode 4: 引导式评审
+逐议题 Socratic 对话式评审，适合与导师讨论
+
+---
+
+## 评审代理角色
+
+### Agent 1: 领域分析师 (Field Analyst)
+**职责**：评估论文在领域中的定位
+- 该领域的核心问题是什么？
+- 论文是否正确定位了相关工作？
+- 贡献是否具有领域意义？
+- 与最相似的 3 篇工作（M1 Layer 6）的差异是否充分论证？
+
+**产出**：领域定位评估报告
+
+### Agent 2: 方法论审稿人 (Methodology Reviewer)
+**职责**：深入审查方法部分
+- 问题定义是否清晰？
+- 方法描述是否可复现？
+- 数学推导是否正确？
+- 实验设计是否合理？
+- 结论是否有实验支撑？
+
+**产出**：方法论严谨性评估报告
+
+### Agent 3: 领域专家审稿人 (Domain Reviewer)
+**职责**：从领域专家角度评估
+- 方法是否解决了领域真实痛点？
+- 实验结果是否可信？
+- 与 SOTA 的对比是否公平？
+- 论证是否有领域特定的逻辑漏洞？
+
+**产出**：领域专家审稿意见
+
+### Agent 4: 跨领域审稿人 (Perspective Reviewer)
+**职责**：评估跨领域贡献和可理解性
+- 非本领域读者能否理解核心思想？
+- 写作是否清晰？
+- 图表是否自解释？
+- 是否过多使用领域黑话？
+
+**产出**：可读性和跨领域贡献评估
+
+### Agent 5: 魔鬼代言人审稿人 (Devil's Advocate Reviewer)
+**职责**：主动寻找论证漏洞
+- 核心 claim 的最强反驳是什么？
+- 实验是否有未考虑的替代解释？
+- 哪些结论需要软化？
+- 是否存在未被 M5 DA pass 覆盖的盲点？
+
+**产出**：攻击性审稿意见 + rebuttal 预判
+
+---
+
+## 评审流程
+
+### Step 1: 准备（读取 M7 输出）
+读取 M5 的 `argument_audit[]` 和 M7 段 A 的红队结果，了解已知问题和已 preempt 的反驳。
+
+### Step 2: 并行评审
+5 个 Agent 并行生成审稿报告（在 LLM 上下文中模拟，实际是同一个 AI 切换 5 个 persona）。
+
+### Step 3: 编辑综合决策
+综合 5 份报告，生成：
+- 总体评估
+- 编辑决策（Accept / Minor Revision / Major Revision / Reject）
+- 决策理由
+- 关键修改项（优先级排序）
+
+### Step 4: 修改路线图
+按优先级罗列修改项，标注：
+- 致命项（blockers，必须修改）
+- 重要项（major，强烈建议修改）
+- 建议项（minor，可选修改）
+- 回流模块（M3/M4/M5/M6）
+
+### Step 5: 修改回复草稿
+为每个修改项预写回复模板（实际投稿时填写具体修改位置和内容）。
+
+---
+
+## 审稿标准（ICLR/NeurIPS 风格）
+
+| 维度 | 评分 (1-10) | 权重 |
+|------|-------------|------|
+| 新颖性 (Novelty) | /10 | 25% |
+| 正确性 (Correctness) | /10 | 25% |
+| 完整性 (Completeness) | /10 | 20% |
+| 清晰度 (Clarity) | /10 | 15% |
+| 相关性 (Relevance) | /10 | 15% |
+
+**编辑决策映射**：
+- 总分 >= 8.0 且无致命项 → Accept
+- 总分 6.0-7.9 → Minor Revision
+- 总分 4.0-5.9 → Major Revision
+- 总分 < 4.0 或有致命未解决项 → Reject
+
+---
+
+## 示例 Prompt
+
+```
+请对我的论文进行投稿前同行评审仿真：
+
+论文文件：[路径]
+目标期刊/会议：[填入]
+M5 论证审计：[指向 passport argument_audit]
+M3 实验记录：[路径]
+
+请输出：
+1. [Mode: full] 5 视角审稿报告
+2. 编辑决策建议 + 理由
+3. 修改路线图（按优先级排序）
+4. 修改回复草稿模板
+```
+
+---
+
+## 与 M7 的边界
+
+| 模块 | 职责 | 粒度 |
+|------|------|------|
+| M7 段 A | 逐条红队检查 | item-level |
+| M8 | 综合评审 | paper-level |
+| M7 段 B | 格式合规 | format-level |
+| M9 | 合规伦理 | compliance-level |
+
+---
+
+## 参考资源
+- ARS: [审稿标准框架](../reference/review/review_criteria_framework.md)
+- ARS: [审稿质量思维](../reference/review/review_quality_thinking.md)
+- ARS: [编辑决策标准](../reference/review/editorial_decision_standards.md)
+- ARS: [质量评估 rubrics](../reference/review/quality_rubrics.md)
+- ARS: [各领域顶级期刊](../reference/review/top_journals_by_field.md)
+- 模板：[同行评审报告](../templates/peer_review_report_template.md) / [编辑决策](../templates/editorial_decision_template.md) / [修改回复](../templates/revision_response_template.md)
+
+## Passport I/O
+
+- **Reads**: `argument_audit[]` (M5 DA records for known weaknesses), `outline` (to verify paper matches planned structure), `bibliography[]` (to cross-check citation integrity from reviewer perspective), `corpus[]` (evidence files for fact-checking reviewer claims), `material_gaps[]` (reviewers will flag these as blockers if unresolved)
+- **Writes**: `current_stage` → `m8`, `corpus[]` (new paths for 5 review reports + editorial decision + revision roadmap), `argument_audit[]` (DA reviewer may discover new attack vectors not caught in M5)
+- **Stage transition**: advances passport to `current_stage = m8` (peer review simulation complete; revision roadmap ready)

@@ -196,6 +196,13 @@ Baseline 方法：[从 M2 的对比文献分类粘贴]
 - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第4部分
 - 上游：M2 文献管理（提供对比文献清单）
 - 下游：M5 论证设计（消费实验结果构建证据链）、M7 投稿前总检（回扫缺陷清单）
+- ARS: [方法论模式目录](../reference/research/methodology_patterns.md) — 研究方法选择与设计模式
+- ARS: [EQUATOR 报告指南](../reference/research/equator_reporting_guidelines.md) — 各领域实验报告标准
+- ARS: [统计报告标准](../reference/research/statistical_reporting_standards.md) — 统计检验与报告规范
+- ARS: [Artifact 可复现模式](../reference/compliance/artifact_reproducibility_pattern.md) — 实验可复现性配置
+- ARS: [Benchmark 报告模式](../reference/compliance/benchmark_report_pattern.md) — benchmark 发布诚信规范
+- ARS: [Ground Truth 隔离模式](../reference/research/ground_truth_isolation_pattern.md) — 数据访问级别声明
+- ARS: [预注册指南](../reference/research/preregistration_guide.md) — 实验预注册最佳实践
 
 ## Passport I/O
 

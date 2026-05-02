@@ -122,6 +122,11 @@ bash script/paper/paper_search.sh "<idea 关键词组合>" \
 - 搜索脚本：[`script/paper/paper_search.sh`](../script/paper/paper_search.sh)（bulk/standard/crossref 三模式）
 - 期刊查询：[`script/paper/venue_lookup.sh`](../script/paper/venue_lookup.sh)（CCF + IF）
 - 本地论文池：[`relate-work/`](../relate-work/)（M1 写入、M3/M6 读取）
+- ARS: [Socratic 提问框架](../reference/research/socratic_questioning_framework.md) — idea 澄清与收敛
+- ARS: [跨学科桥梁](../reference/research/interdisciplinary_bridges.md) — 交叉领域创新性评估
+- ARS: [伦理检查清单](../reference/compliance/ethics_checklist.md) — 早期伦理风险筛查
+- ARS: [各领域顶级期刊](../reference/review/top_journals_by_field.md) — 投稿目标选择参考
+- ARS: [文献来源质量层级](../reference/research/source_quality_hierarchy.md) — 文献质量评估框架
 
 ## Passport I/O
 
