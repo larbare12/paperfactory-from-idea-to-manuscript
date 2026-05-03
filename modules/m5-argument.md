@@ -1,7 +1,7 @@
 # M5 论证设计模块
 
 > **理论基础**：
-> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第1.1节（明确的目标导向）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第1.1节（明确的目标导向）
 > - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 推理架构提取思想
 
 ## 功能
@@ -179,7 +179,7 @@ M2 已分类文献：[指向 relate-work/ref-*.md 列表]
 - [ ] 跨章节呼应表是否完整？
 
 ## 参考资源
-- 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第2.1节
+- 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第2.1节
 - 上游：[M3 实验设计](m3-experiment.md)（提供实验证据）、[M2 文献管理](m2-literature.md)（提供文献证据）、[M4 结构规划](m4-structure.md)（提供章节骨架）
 - 下游：[M6 写作辅助](m6-writing.md)（按论证骨架展开）、[M7 投稿前总检](m7-final-check.md)（回扫反驳预判）
 - 论据池：[`relate-work/`](../relate-work/)

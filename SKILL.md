@@ -101,10 +101,10 @@ M1–M7 自动串联（M0 持续监控状态）
 ## 详细规范
 
 ### 学术写作规范
-参见 [ACADEMIC-WRITING-GUIDE.md](reference/ACADEMIC-WRITING-GUIDE.md)
+参见 [ACADEMIC-WRITING-GUIDE.md](reference/writing/ACADEMIC-WRITING-GUIDE.md)
 
 ### 论文写作指南
-参见 [PAPER-WRITING-GUIDE.md](reference/PAPER-WRITING-GUIDE.md)
+参见 [PAPER-WRITING-GUIDE.md](reference/writing/PAPER-WRITING-GUIDE.md)
 
 ## 理论基础
 

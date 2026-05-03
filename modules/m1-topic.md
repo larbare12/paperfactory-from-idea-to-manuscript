@@ -1,7 +1,7 @@
 # M1 选题诊断模块
 
 > **理论基础**：
-> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第7.1节（论文大纲生成 Prompt）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第7.1节（论文大纲生成 Prompt）
 > - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 八层提取法思想
 
 ## 功能
@@ -118,7 +118,7 @@ bash script/paper/paper_search.sh "<idea 关键词组合>" \
 - **低**：增量改进、已有类似工作、应用价值有限
 
 ## 参考资源
-- 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第7.1节
+- 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第7.1节
 - 搜索脚本：[`script/paper/paper_search.sh`](../script/paper/paper_search.sh)（bulk/standard/crossref 三模式）
 - 期刊查询：[`script/paper/venue_lookup.sh`](../script/paper/venue_lookup.sh)（CCF + IF）
 - 本地论文池：[`relate-work/`](../relate-work/)（M1 写入、M3/M6 读取）

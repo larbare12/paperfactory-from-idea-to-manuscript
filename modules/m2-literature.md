@@ -1,8 +1,8 @@
 # M2 文献管理模块
 
 > **理论基础**：
-> - 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/ACADEMIC-WRITING-GUIDE.md) 第三部分（参考文献格式规范）
-> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第5部分（引用与参考文献）
+> - 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/writing/ACADEMIC-WRITING-GUIDE.md) 第三部分（参考文献格式规范）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第5部分（引用与参考文献）
 > - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 引用逻辑分析思想
 
 ## 功能
@@ -152,7 +152,7 @@
 - 无关引用堆砌
 
 ## 参考资源
-- 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/ACADEMIC-WRITING-GUIDE.md) 第三部分
+- 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/writing/ACADEMIC-WRITING-GUIDE.md) 第三部分
 - DOI → BibTeX：[`script/paper/doi2bibtex.sh`](../script/paper/doi2bibtex.sh)
 - 期刊质量：[`script/paper/venue_lookup.sh`](../script/paper/venue_lookup.sh)
 - 作者 H-index：[`script/paper/author_info.sh`](../script/paper/author_info.sh)

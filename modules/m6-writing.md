@@ -1,9 +1,9 @@
 # M6 写作辅助模块
 
 > **理论基础**：
-> - 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/ACADEMIC-WRITING-GUIDE.md) 全文（数学符号、缩写、格式规范）
-> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第2部分（用词与语言风格）
-> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第6部分（常见错误与避免方法）
+> - 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/writing/ACADEMIC-WRITING-GUIDE.md) 全文（数学符号、缩写、格式规范）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第2部分（用词与语言风格）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第6部分（常见错误与避免方法）
 
 > **流程位置**：M1 → M2 → M3 → M4 → M5 → **M6（本模块）** → M7 总检
 > 本模块按 [M5 论证设计](m5-argument.md) 产出的论证骨架展开正文，依据 [M4 结构规划](m4-structure.md) 的章节边界控制内容。
@@ -268,8 +268,8 @@ BERT        | Section 2.1      | Bidirectional Encoder Representations from Tran
 | 绝对化 "This is the best" | 谨慎 "This method outperforms" |
 
 ## 参考资源
-- 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第2部分
-- 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/ACADEMIC-WRITING-GUIDE.md)
+- 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第2部分
+- 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/writing/ACADEMIC-WRITING-GUIDE.md)
 - 本地论据池：[`relate-work/`](../relate-work/)
 - 占位检索脚本：[`script/paper/find_evidence.sh`](../script/paper/find_evidence.sh)（已实现，corpus-first / search-fills-gap 流程）
 - ARS: [学术写作风格](../reference/writing/academic_writing_style.md) — 英语学术写作语气与风格指南
