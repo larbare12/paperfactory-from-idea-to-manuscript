@@ -1,7 +1,7 @@
 # M4 结构规划模块
 
 > **理论基础**：
-> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第1.2节（IMRAD 标准结构）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第1.2节（IMRAD 标准结构）
 
 ## 功能
 生成 IMRAD 大纲、章节边界、篇幅分配、写作顺序。
@@ -135,7 +135,7 @@ M3 实验结果概要：[填入]
 ```
 
 ## 参考资源
-- [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第1.2节
+- [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第1.2节
 - 论文结构模板：[IMRaD](../templates/imrad_template.md) / [会议论文](../templates/conference_paper_template.md) / [案例研究](../templates/case_study_template.md) / [理论论文](../templates/theoretical_paper_template.md) / [文献综述](../templates/literature_review_template.md)
 - 论证逻辑设计：[M5 论证设计](m5-argument.md)
 - 写作执行：[M6 写作辅助](m6-writing.md)

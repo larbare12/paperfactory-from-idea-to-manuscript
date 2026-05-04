@@ -1,9 +1,9 @@
 # M7 投稿前总检模块
 
 > **理论基础**：
-> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第3部分（写作流程规范）
-> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 附录（投稿前检查清单）
-> - 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/ACADEMIC-WRITING-GUIDE.md) 全文（格式规范、参考文献、图表）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第3部分（写作流程规范）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 附录（投稿前检查清单）
+> - 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/writing/ACADEMIC-WRITING-GUIDE.md) 全文（格式规范、参考文献、图表）
 
 ## 功能
 **合并旧版 M7（评审模拟）+ M8（格式检查）**，分三段：A 内容红队 / B 格式合规 / C rebuttal 撰写。
@@ -193,8 +193,8 @@ C. （投稿后）按收到的审稿意见生成 rebuttal 草稿
 | 引用格式混乱 | B.5 | `doi2bibtex.sh` 重生成 |
 
 ## 参考资源
-- [ACADEMIC-WRITING-GUIDE.md](../reference/ACADEMIC-WRITING-GUIDE.md)
-- [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md)
+- [ACADEMIC-WRITING-GUIDE.md](../reference/writing/ACADEMIC-WRITING-GUIDE.md)
+- [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md)
 - BibTeX 工具：[`script/paper/doi2bibtex.sh`](../script/paper/doi2bibtex.sh)
 - 上游：[M0 仪表盘](m0-dashboard.md) / [M3 实验](m3-experiment.md) / [M5 论证](m5-argument.md) / [M6 写作](m6-writing.md)
 - ARS: [质量评估 rubrics](../reference/review/quality_rubrics.md) — 论文质量多维度评分标准

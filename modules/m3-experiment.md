@@ -1,8 +1,8 @@
 # M3 实验设计模块
 
 > **理论基础**：
-> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第7.5节（实验设计检查 Prompt）
-> - 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第4部分（图表与数据呈现）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第7.5节（实验设计检查 Prompt）
+> - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第4部分（图表与数据呈现）
 > - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 评估标准设计思想
 
 ## 功能
@@ -193,7 +193,7 @@ Baseline 方法：[从 M2 的对比文献分类粘贴]
 | 无误差分析 | 理解不深入 | 案例分析 |
 
 ## 参考资源
-- 参见 [PAPER-WRITING-GUIDE.md](../reference/PAPER-WRITING-GUIDE.md) 第4部分
+- 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第4部分
 - 上游：M2 文献管理（提供对比文献清单）
 - 下游：M5 论证设计（消费实验结果构建证据链）、M7 投稿前总检（回扫缺陷清单）
 - ARS: [方法论模式目录](../reference/research/methodology_patterns.md) — 研究方法选择与设计模式
