@@ -20,6 +20,111 @@ description: |
 
 本 Skill 旨在实现：**人只需提供 idea，论文全流程自动化**。
 
+---
+
+## 🚦 初始化检查（首次使用必读，每次新项目复核）
+
+**Agent 在开始任何 M1–M9 任务前，必须先与用户完成下面 3 项确认。任何一项缺失都禁止进入后续模块。**
+
+### Step 1：API 凭据检查
+本 Skill 依赖 Semantic Scholar 等外部 API 进行文献检索与引用验证。Agent 必须主动询问用户：
+
+> "在开始之前，请确认你已经设置好 API 凭据：
+> 1. 是否已经在项目根目录创建 `.env` 文件？（参考 `.env.example`）
+> 2. `S2_API_KEY` 是否已填入有效值？（在 https://www.semanticscholar.org/product/api 申请）
+> 如果未设置，我现在帮你检查并指引完成。"
+
+**Agent 操作**：
+- 运行 `bash script/paper/verify_config.sh` 验证配置是否就绪
+- 若 `.env` 不存在 → 提示用户 `cp .env.example .env` 并填入 `S2_API_KEY`
+- 若 `S2_API_KEY=your_api_key_here`（默认占位符） → 拒绝进入 M1/M2，要求先填写真实密钥
+
+### Step 2：config/ 目录检查
+所有 API 端点、Header、限流策略都集中在 `config/` 目录下。Agent 必须：
+
+- **先读 [`config/README.md`](config/README.md)**，理解 `api.json` 的字段语义和修改流程
+- 询问用户："是否需要修改 `config/api.json` 中的端点（例如使用代理、私有镜像）？"
+- 若用户答"否" → 使用默认配置进入下一步
+- 若用户答"是" → 引导用户参照 `config/README.md` 修改，修改后再次运行 `verify_config.sh`
+
+### Step 3：Git 工作区检查
+确认当前在 git 仓库内、且工作区干净（或用户明确同意在脏工作区上继续）。详见下方"Git 版本控制（强制）"章节。
+
+> ✅ 三项全部通过后，再进入 M1。否则 STOP，向用户报告缺失项。
+
+---
+
+## 🔐 Git 版本控制（强制要求）
+
+**本 Skill 在使用过程中，Agent 必须全程使用 git 进行版本控制。这是硬性约束，不允许跳过。**
+
+### 核心规则
+
+1. **每个模块开始前，新建分支**
+   - 命名规范：`<type>/<module>-<short-desc>`
+   - 示例：`feat/m1-topic-diagnosis`、`feat/m3-ablation-design`、`docs/m6-intro-draft`、`fix/m7-format-compliance`
+
+2. **每个模块结束后，提交 commit**
+   - 提交信息格式：`<type>(<module>): <what changed>`（遵循仓库现有 commit 风格，参见 `git log --oneline`）
+   - 示例：`feat(m1): topic feasibility report with 23 candidates`、`feat(m6): draft Introduction §1.1–§1.3`
+   - 若一个模块产生多个独立产物（报表、草稿、脚本输出），分多次 commit，不要堆在一起
+
+3. **关键节点必须有 commit 边界**
+   - relate-work/ 检索池沉淀完毕 → commit
+   - draft 主文件结构变更（章节增删/重写）→ commit
+   - 任何脚本生成的报告（citation_verification_report、material_gap_report 等）→ commit
+   - **进入 M7/M8/M9 红队/审稿/合规检查前，工作区必须干净**
+
+4. **禁止动作**
+   - ❌ 禁止 `git add -A` 一把梭，应明确列出文件
+   - ❌ 禁止 `--no-verify` 跳过 hooks
+   - ❌ 禁止 `--amend` 修改已合并的 commit
+   - ❌ 禁止删除分支前未确认 merge 状态
+
+5. **每次重要修改前**
+   - 先 `git status` + `git diff` 确认当前状态
+   - 跨模块切换前，确认上一个模块的产物已 commit 或显式 stash
+
+> Agent 在每次进入新模块时，**第一句话必须是**："正在为 M{n} 创建分支 `<branch-name>`，开始前请确认当前工作区状态。"
+
+---
+
+## ⚠️ 反幻觉硬约束（Anti-Hallucination）
+
+**论文检索（M1/M2）完成后，所有引用必须经过真实性验证才能进入 M6 写作。这是最严重的红线，违反将导致论文撤稿风险。**
+
+### 三层验证机制
+
+#### Layer 1：来源验证（每篇文献入库时）
+- 任何文献从外部进入 `relate-work/` 之前，必须有可验证的来源标识：DOI / arXiv ID / Semantic Scholar paperId 至少一个
+- 没有标识符的"凭印象引用" → 直接丢弃，不允许"先写上再说"
+- 检索结果必须通过 `script/paper/paper_search.sh` 或同等脚本获得，禁止 Agent 自行"回忆"论文标题、作者、年份
+
+#### Layer 2：引用验证（写作阶段，每次新增 \cite 时）
+- 草稿中每个 `\cite{key}` 或 `[@key]` 必须在 `references.bib` 中有完整条目
+- 进入 M7 前必须运行：
+  ```bash
+  bash script/paper/verify_citations.sh relate-work/draft.tex --bib relate-work/references.bib
+  ```
+- 报告会按"五类幻觉分类"（虚构标题、错配作者、年份偏差、虚假 venue、不存在 DOI）输出
+- **任何 Tier 0（高风险）幻觉未消除 → 禁止进入 M7**
+
+#### Layer 3：内容一致性（论证阶段）
+- 引用论文的核心论点、数值、结论，Agent 不得复述记忆，必须从 `relate-work/` 中真实存在的 PDF/摘要 中摘录
+- 若 `relate-work/` 中没有该论文的全文 → 标记 `[NEEDS-EVIDENCE]` 并在 M6 检查中回填
+- 见 [M6 写作辅助](modules/m6-writing.md) 的 "MATERIAL GAP IRON RULE"
+
+### 红线清单（任何一条触发立即 STOP）
+
+- 🚫 用模型记忆引用 2024 年之后的论文（知识截止前后的论文都不可信）
+- 🚫 凭"似乎读过"补全 BibTeX 字段（作者、期刊、卷号、页码）
+- 🚫 把 arXiv 预印本当作正式期刊版本引用
+- 🚫 跳过 `verify_citations.sh` 直接进入 M7
+
+> Agent 在 M2 结束、M6 进入前、M7 进入前 **三个时点**，必须主动运行 `verify_citations.sh` 并把报告路径告诉用户。
+
+---
+
 ### 模块架构（M0 + M1–M9）
 
 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 的八层提取法思想，并整合 [academic-research-skills](https://github.com/) 的 prompt 资产，扩展为 1+9 架构：M0 是横切的常驻模块，M1–M9 按"研究 → 写作 → 评审 → 合规 → 投稿"的真实顺序排列。
@@ -37,6 +142,8 @@ description: |
 | **M8** | [同行评审仿真](modules/m8-peer-review.md) | 多视角审稿模拟（领域/方法/专家/跨领域/DA）+ 编辑决策 + 修改路线图 | 评审 |
 | **M9** | [合规与伦理检查](modules/m9-compliance-check.md) | PRISMA-trAIce 17 项 + RAISE 五维度 + AI 披露 + 最终门控 | 合规 / 投稿 |
 
+> **v0.4 变更说明**（2026-05-04）：新增三大硬约束（首段已展开）——(1) 初始化检查：API 凭据 + `config/` 目录 + git 工作区三项门控；(2) Git 版本控制全程强制：分支命名、commit 边界、禁止动作清单；(3) 反幻觉硬约束：三层验证（来源 → 引用 → 内容）+ 四条红线，强制在 M2/M6/M7 三个时点运行 `verify_citations.sh`。整合 ARS prompt 资产后修复 reference 链接（PR #9、#10）。
+>
 > **v0.3 变更说明**：扩展为 M0-M9 十模块架构。新增 M8（同行评审仿真，整合 ARS academic-paper-reviewer 的 5 审稿人模型）和 M9（合规与伦理检查，整合 ARS compliance agent 的 PRISMA-trAIce + RAISE 双框架）。M1-M7 增强了对参考资料库的引用。新增 `templates/` 目录（15 个模板）和 `reference/` 下按主题重组为 writing/research/review/compliance 四个子目录（47 个参考资料）。
 
 ## 使用方式
@@ -87,6 +194,9 @@ M1–M7 自动串联（M0 持续监控状态）
 3. **穿插**：Related Work, Results, Discussion
 
 ### 投稿前检查清单
+- [ ] **初始化**：`.env` 已配置、`config/api.json` 已确认、`verify_config.sh` 通过
+- [ ] **Git**：所有模块产物已 commit，工作区干净，PR 已合并
+- [ ] **反幻觉**：`verify_citations.sh` 报告 0 条 Tier 0 幻觉
 - [ ] M0：仪表盘的 pending 列表为空
 - [ ] M1：选题经过数据驱动诊断（relate-work/ 已沉淀候选）
 - [ ] M2：文献分类完成、bib 规范、Tier 0 引用验证通过
@@ -144,6 +254,7 @@ M1–M7 自动串联（M0 持续监控状态）
 
 ---
 
-*Skill 版本: 0.3*
-*最后更新: 2026-04-30*
+*Skill 版本: 0.4*
+*最后更新: 2026-05-04*
 *基于 Relic 论文八层提取法 + academic-research-skills prompt 资产整合*
+*v0.4 新增：初始化检查 / Git 强制版本控制 / 反幻觉三层验证*
