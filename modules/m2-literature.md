@@ -34,6 +34,28 @@
 
 ## 文献管理流程
 
+### Step 0: 检索模式选择（v0.5+）
+
+| 模式 | 检索源 | 排序 | 何时用 |
+|------|--------|------|--------|
+| `--mode multi` | arXiv + S2 + OpenAlex 三源并发 | **BM25 重排（title × 3）** | **写综述、找相关工作的首选**——覆盖最广，arXiv 预印本 + 正式发表论文都能拿到，BM25 排序质量明显优于单源相关性 |
+| `--mode standard` | Semantic Scholar 单源 | S2 相关性 | 已知主题需要权威 S2 排序时；或不愿装 Python 依赖时 |
+| `--mode bulk` | Semantic Scholar 单源 | 无（年份过滤） | 大批量（>100 条）拉取做候选池 |
+| `--mode crossref` | CrossRef | 无 | S2 限流时的 fallback |
+| `--mode verify` | S2 (DOI / 标题) | Levenshtein | 引用真实性校验（M6→M7 强制） |
+
+**典型 multi 模式调用**：
+```bash
+# 找相关工作（综述写作）
+bash script/paper/paper_search.sh "diffusion models for molecular generation" \
+    --mode multi --year 2022- --limit 30 \
+    > relate-work/search-multi-$(date +%Y%m%d).jsonl
+```
+
+输出每行一个 JSON 对象，**额外字段**：`source`（arxiv/s2/openalex）、`also_in`（同一篇被几个源同时检出，自动去重保留 citation 最高版本）、`bm25_score`（重排分数，已降序）。
+
+> **依赖**：multi 模式需要 `pip install -r requirements.txt`（rank-bm25 + arxiv + requests，约 5MB）。其他四模式无 Python 依赖。
+
 ### Step 1: 文献采集
 读取 `relate-work/search-*.json`，必要时再补一次 `paper_search.sh`
 

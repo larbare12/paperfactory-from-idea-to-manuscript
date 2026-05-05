@@ -1,17 +1,19 @@
 #!/bin/bash
-# 论文搜索（合并 s2_search + s2_bulk_search + crossref_search）
+# 论文搜索（合并 s2_search + s2_bulk_search + crossref_search + multi-source）
 # 用法:
-#   bash script/paper/paper_search.sh "query" [--mode standard|bulk|crossref|verify] [--year 2020-] [--limit N]
+#   bash script/paper/paper_search.sh "query" [--mode standard|bulk|crossref|multi|verify] [--year 2020-] [--limit N]
 #   bash script/paper/paper_search.sh --mode verify --input <(echo '{"title":"...","doi":"..."}')
 # 示例:
 #   bash script/paper/paper_search.sh "deep learning"                              # 默认 standard，limit=20
 #   bash script/paper/paper_search.sh "deep learning" --mode bulk --year 2020- --limit 50
 #   bash script/paper/paper_search.sh "deep learning" --mode crossref --limit 20
+#   bash script/paper/paper_search.sh "deep learning" --mode multi --limit 30      # arXiv + S2 + OpenAlex 并发 + BM25
 #
-# 四种模式语义不同，不要混淆:
+# 五种模式语义不同，不要混淆:
 #   standard : Semantic Scholar /paper/search    （相关性排序，limit ≤ 100）
 #   bulk     : Semantic Scholar /paper/search/bulk（支持 year 过滤，limit ≤ 1000，无相关性排序）
 #   crossref : CrossRef API（无严格速率限制，作为 S2 429 时的 fallback）
+#   multi    : arXiv + S2 + OpenAlex 三源并发 + BM25 重排（v0.5+，需 pip install -r requirements.txt）
 #   verify   : S2 Tier 0 引用校验（DOI 反查 + 标题搜索，NDJSON 输出）
 
 set -e
@@ -62,9 +64,10 @@ case "$MODE" in
     standard) LIMIT="${LIMIT:-20}" ;;
     bulk)     LIMIT="${LIMIT:-50}" ;;
     crossref) LIMIT="${LIMIT:-20}" ;;
+    multi)    LIMIT="${LIMIT:-30}" ;;
     verify)   LIMIT="" ;;
     *)
-        echo "{\"error\": \"Invalid --mode: $MODE (expected standard|bulk|crossref|verify)\"}" >&2
+        echo "{\"error\": \"Invalid --mode: $MODE (expected standard|bulk|crossref|multi|verify)\"}" >&2
         exit 1
         ;;
 esac
@@ -300,6 +303,49 @@ case "$MODE" in
             url: .URL,
             authors: ([.author[]? | ((.given // "") + " " + (.family // ""))][:3] | if length > 0 then join(", ") + (if length > 3 then " et al." else "" end) else "N/A" end)
         }'
+        ;;
+
+    multi)
+        # arXiv + Semantic Scholar + OpenAlex 三源并发 + BM25 重排（v0.5+）
+        # 解析 YEAR_RANGE（"2020-"、"2020-2024"、"2020"）→ --year-from / --year-to
+        YEAR_FROM_ARG=()
+        YEAR_TO_ARG=()
+        if [[ -n "$YEAR_RANGE" ]]; then
+            if [[ "$YEAR_RANGE" =~ ^([0-9]{4})-([0-9]{4})$ ]]; then
+                YEAR_FROM_ARG=(--year-from "${BASH_REMATCH[1]}")
+                YEAR_TO_ARG=(--year-to "${BASH_REMATCH[2]}")
+            elif [[ "$YEAR_RANGE" =~ ^([0-9]{4})-$ ]]; then
+                YEAR_FROM_ARG=(--year-from "${BASH_REMATCH[1]}")
+            elif [[ "$YEAR_RANGE" =~ ^-([0-9]{4})$ ]]; then
+                YEAR_TO_ARG=(--year-to "${BASH_REMATCH[1]}")
+            elif [[ "$YEAR_RANGE" =~ ^([0-9]{4})$ ]]; then
+                YEAR_FROM_ARG=(--year-from "${BASH_REMATCH[1]}")
+                YEAR_TO_ARG=(--year-to "${BASH_REMATCH[1]}")
+            fi
+        fi
+
+        # Python 解释器自动探测：实际跑 `-c 'import sys'` 验证（Windows Store stub 会通过
+        # `--version` 但实际不能 import，必须 import 测试）。py -3 优先 → python3 → python
+        PYTHON_CMD=()
+        if command -v py >/dev/null 2>&1 && py -3 -c "import sys" >/dev/null 2>&1; then
+            PYTHON_CMD=(py -3)
+        elif command -v python3 >/dev/null 2>&1 && python3 -c "import sys" >/dev/null 2>&1; then
+            PYTHON_CMD=(python3)
+        elif command -v python >/dev/null 2>&1 && python -c "import sys" >/dev/null 2>&1; then
+            PYTHON_CMD=(python)
+        else
+            echo '{"error": "Python 3 not found (or only the Windows Store stub is installed). Install real Python 3.9+ and run: pip install -r requirements.txt"}' >&2
+            exit 1
+        fi
+
+        export PAPER_SKILL_ROOT="$PROJECT_ROOT"
+        # 默认 jsonl 输出，与 standard 模式逐条 JSON 行为一致
+        "${PYTHON_CMD[@]}" "$SCRIPT_DIR/multi_source_search.py" \
+            --query "$QUERY" \
+            --limit "$LIMIT" \
+            "${YEAR_FROM_ARG[@]}" \
+            "${YEAR_TO_ARG[@]}" \
+            --output jsonl
         ;;
 
     verify)

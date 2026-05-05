@@ -32,12 +32,14 @@ description: |
 > "在开始之前，请确认你已经设置好 API 凭据：
 > 1. 是否已经在项目根目录创建 `.env` 文件？（参考 `.env.example`）
 > 2. `S2_API_KEY` 是否已填入有效值？（在 https://www.semanticscholar.org/product/api 申请）
+> 3. 是否已安装 Python 依赖（`pip install -r requirements.txt`）？仅 `--mode multi` 需要，其他模式可跳过。
 > 如果未设置，我现在帮你检查并指引完成。"
 
 **Agent 操作**：
 - 运行 `bash script/paper/verify_config.sh` 验证配置是否就绪
 - 若 `.env` 不存在 → 提示用户 `cp .env.example .env` 并填入 `S2_API_KEY`
 - 若 `S2_API_KEY=your_api_key_here`（默认占位符） → 拒绝进入 M1/M2，要求先填写真实密钥
+- 若用户打算用 `--mode multi`（多源检索）→ 提示 `pip install -r requirements.txt`（rank-bm25 + arxiv + requests）
 
 ### Step 2：config/ 目录检查
 所有 API 端点、Header、限流策略都集中在 `config/` 目录下。Agent 必须：
@@ -142,9 +144,9 @@ description: |
 | **M8** | [同行评审仿真](modules/m8-peer-review.md) | 多视角审稿模拟（领域/方法/专家/跨领域/DA）+ 编辑决策 + 修改路线图 | 评审 |
 | **M9** | [合规与伦理检查](modules/m9-compliance-check.md) | PRISMA-trAIce 17 项 + RAISE 五维度 + AI 披露 + 最终门控 | 合规 / 投稿 |
 
-> **v0.4 变更说明**（2026-05-04）：新增三大硬约束（首段已展开）——(1) 初始化检查：API 凭据 + `config/` 目录 + git 工作区三项门控；(2) Git 版本控制全程强制：分支命名、commit 边界、禁止动作清单；(3) 反幻觉硬约束：三层验证（来源 → 引用 → 内容）+ 四条红线，强制在 M2/M6/M7 三个时点运行 `verify_citations.sh`。整合 ARS prompt 资产后修复 reference 链接（PR #9、#10）。
+> **v0.5 变更说明**（2026-05-05）：新增 `paper_search.sh --mode multi`，整合 arXiv + Semantic Scholar + OpenAlex 三源并发检索 + BM25 重排（蒸馏自 papercircle-main 项目，~400 行 Python）。原 standard/bulk/crossref/verify 四模式保持不变。新增依赖：`rank-bm25` + `arxiv` + `requests`（见 `requirements.txt`，仅 multi 模式需要）。
 >
-> **v0.3 变更说明**：扩展为 M0-M9 十模块架构。新增 M8（同行评审仿真，整合 ARS academic-paper-reviewer 的 5 审稿人模型）和 M9（合规与伦理检查，整合 ARS compliance agent 的 PRISMA-trAIce + RAISE 双框架）。M1-M7 增强了对参考资料库的引用。新增 `templates/` 目录（15 个模板）和 `reference/` 下按主题重组为 writing/research/review/compliance 四个子目录（47 个参考资料）。
+> **v0.4 变更说明**（2026-05-04）：新增三大硬约束（首段已展开）——(1) 初始化检查：API 凭据 + `config/` 目录 + git 工作区三项门控；(2) Git 版本控制全程强制：分支命名、commit 边界、禁止动作清单；(3) 反幻觉硬约束：三层验证（来源 → 引用 → 内容）+ 四条红线，强制在 M2/M6/M7 三个时点运行 `verify_citations.sh`。整合 ARS prompt 资产后修复 reference 链接（PR #9、#10）。
 
 ## 使用方式
 
@@ -254,7 +256,8 @@ M1–M7 自动串联（M0 持续监控状态）
 
 ---
 
-*Skill 版本: 0.4*
-*最后更新: 2026-05-04*
+*Skill 版本: 0.5*
+*最后更新: 2026-05-05*
 *基于 Relic 论文八层提取法 + academic-research-skills prompt 资产整合*
+*v0.5 新增：多源检索 + BM25 重排（`paper_search.sh --mode multi`，蒸馏自 papercircle-main）*
 *v0.4 新增：初始化检查 / Git 强制版本控制 / 反幻觉三层验证*

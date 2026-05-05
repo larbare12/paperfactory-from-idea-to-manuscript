@@ -11,6 +11,15 @@
     },
     "doi": {
       "base_url": "https://doi.org"
+    },
+    "arxiv": {
+      "base_url": "http://export.arxiv.org/api/query",
+      "_note": "Used by --mode multi via the `arxiv` Python package; no key required."
+    },
+    "openalex": {
+      "base_url": "https://api.openalex.org",
+      "mailto": null,
+      "_note": "Used by --mode multi. Set `mailto` to your email (or env OPENALEX_MAILTO) to join the polite pool."
     }
   }
 }
