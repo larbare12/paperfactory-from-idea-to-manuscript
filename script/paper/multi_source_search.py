@@ -77,7 +77,12 @@ class PaperSource:
 
 
 class ArxivSource(PaperSource):
-    """arXiv via the official `arxiv` Python client."""
+    """arXiv via the official `arxiv` Python client.
+
+    arXiv enforces per-IP rate limiting on the search endpoint, with cooldowns
+    of ~5-15 min after a burst. Defaults below match arXiv's TOU recommendation:
+    one request per 3 s, three retries on transient errors.
+    """
     name = "arxiv"
 
     def search(self, query, limit, year_from, year_to):
@@ -86,7 +91,8 @@ class ArxivSource(PaperSource):
         except ImportError:
             print("[warn] arxiv package not installed; pip install arxiv", file=sys.stderr)
             return []
-        client = arxiv.Client(page_size=min(limit, 100), delay_seconds=0, num_retries=2)
+        # Respect arXiv TOU: 1 req / 3s; let the library handle 429 backoff.
+        client = arxiv.Client(page_size=min(limit, 100), delay_seconds=3, num_retries=3)
         search = arxiv.Search(query=query, max_results=limit,
                               sort_by=arxiv.SortCriterion.Relevance)
         out: list[Paper] = []
@@ -97,22 +103,27 @@ class ArxivSource(PaperSource):
                     continue
                 if year_to and year and year > year_to:
                     continue
-                arxiv_id = r.entry_id.rsplit("/", 1)[-1].split("v")[0]
-                out.append(Paper(
-                    title=(r.title or "").strip().replace("\n", " "),
-                    abstract=(r.summary or "").strip().replace("\n", " "),
-                    authors=[a.name for a in r.authors][:10],
-                    year=year,
-                    venue="arXiv",
-                    doi=r.doi,
-                    arxiv_id=arxiv_id,
-                    url=r.entry_id,
-                    citations=0,  # arXiv doesn't expose citation count
-                    source=self.name,
-                ))
+                out.append(Paper(**self._parse_result(r)))
         except Exception as e:
             print(f"[warn] arxiv search failed: {e}", file=sys.stderr)
         return out
+
+    def _parse_result(self, r) -> dict:
+        """Convert an arxiv.Result to Paper kwargs. Extracted for unit testing."""
+        year = r.published.year if r.published else None
+        arxiv_id = r.entry_id.rsplit("/", 1)[-1].split("v")[0]
+        return dict(
+            title=(r.title or "").strip().replace("\n", " "),
+            abstract=(r.summary or "").strip().replace("\n", " "),
+            authors=[a.name for a in r.authors][:10],
+            year=year,
+            venue="arXiv",
+            doi=r.doi,
+            arxiv_id=arxiv_id,
+            url=r.entry_id,
+            citations=0,
+            source=self.name,
+        )
 
 
 class SemanticScholarSource(PaperSource):
@@ -303,12 +314,20 @@ def rerank_bm25(papers: list[Paper], query: str, title_weight: int = 3) -> list[
 # ---------- Output formatting ----------
 
 def _arxiv_status(p: Paper) -> tuple[bool, str, str]:
+    """Decide arxiv_status. The arXiv API itself does NOT expose citation
+    counts (it's a preprint repo, not a citation index — see arXiv API
+    User's Manual §3.3.2). So when a paper comes ONLY from arxiv with no
+    cross-source enrichment, we cannot judge citation tier and must say so
+    rather than falsely flagging it as "low citation"."""
     is_arxiv = bool(p.arxiv_id) or "arxiv" in (p.venue or "").lower()
-    if is_arxiv and p.citations < ARXIV_THRESHOLD:
+    if not is_arxiv:
+        return False, "normal", "✅ 正式发表"
+    citation_known = p.source != "arxiv" or any(s in ("s2", "openalex") for s in p.also_in)
+    if not citation_known:
+        return True, "unknown", "ℹ️ arXiv 预印本（引用数未知，arXiv API 不返回 citationCount）"
+    if p.citations < ARXIV_THRESHOLD:
         return True, "caution", f"⚠️ arXiv 低引用({p.citations})，谨慎引用"
-    if is_arxiv and p.citations >= ARXIV_THRESHOLD:
-        return True, "recommended", f"✅ 高影响力 arXiv ({p.citations} 引用)"
-    return False, "normal", "✅ 正式发表"
+    return True, "recommended", f"✅ 高影响力 arXiv ({p.citations} 引用)"
 
 
 def to_output_dict(p: Paper) -> dict:

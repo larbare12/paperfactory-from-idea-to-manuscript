@@ -144,7 +144,7 @@ description: |
 | **M8** | [同行评审仿真](modules/m8-peer-review.md) | 多视角审稿模拟（领域/方法/专家/跨领域/DA）+ 编辑决策 + 修改路线图 | 评审 |
 | **M9** | [合规与伦理检查](modules/m9-compliance-check.md) | PRISMA-trAIce 17 项 + RAISE 五维度 + AI 披露 + 最终门控 | 合规 / 投稿 |
 
-> **v0.5 变更说明**（2026-05-05）：新增 `paper_search.sh --mode multi`，整合 arXiv + Semantic Scholar + OpenAlex 三源并发检索 + BM25 重排（蒸馏自 papercircle-main 项目，~400 行 Python）。原 standard/bulk/crossref/verify 四模式保持不变。新增依赖：`rank-bm25` + `arxiv` + `requests`（见 `requirements.txt`，仅 multi 模式需要）。
+> **v0.5 变更说明**（2026-05-05）：新增 `paper_search.sh --mode multi`，整合 arXiv + Semantic Scholar + OpenAlex 三源并发检索 + BM25 重排（蒸馏自 papercircle-main 项目，~400 行 Python）。原 standard/bulk/crossref/verify 四模式保持不变。新增依赖：`rank-bm25` + `arxiv` + `requests`（见 `requirements.txt`，仅 multi 模式需要）。仅在 arxiv 命中、未被 S2/OpenAlex 交叉验证的预印本，`arxiv_status` 标为 `unknown`（而非 caution），因 arXiv API 不返回 `citationCount`。各源官方文档与限流参考见 [`config/README.md`](config/README.md) "外部 API 参考与限流" 表。
 >
 > **v0.4 变更说明**（2026-05-04）：新增三大硬约束（首段已展开）——(1) 初始化检查：API 凭据 + `config/` 目录 + git 工作区三项门控；(2) Git 版本控制全程强制：分支命名、commit 边界、禁止动作清单；(3) 反幻觉硬约束：三层验证（来源 → 引用 → 内容）+ 四条红线，强制在 M2/M6/M7 三个时点运行 `verify_citations.sh`。整合 ARS prompt 资产后修复 reference 链接（PR #9、#10）。
 

@@ -28,10 +28,49 @@ config/
     },
     "doi": {
       "base_url": "https://doi.org"                         // DOI 解析服务 URL
+    },
+    "arxiv": {                                              // v0.5+ multi 模式使用
+      "base_url": "http://export.arxiv.org/api/query",      // 仅供参考；Python `arxiv` 库内置端点
+      "_note": "无 API key；限流见下方表格"
+    },
+    "openalex": {                                           // v0.5+ multi 模式使用
+      "base_url": "https://api.openalex.org",
+      "mailto": null,                                       // 设为你的邮箱进 polite pool
+      "_note": "免费层 100,000 req/day，限流见下方表格"
     }
   }
 }
 ```
+
+## 外部 API 参考与限流
+
+各检索源的官方文档与限流策略汇总。修改 `base_url` 或诊断 429 错误时查这里。
+
+| 源 | 用途 | 官方文档 | 限流 | 是否需要 key |
+|---|---|---|---|---|
+| **Semantic Scholar (S2)** | `--mode standard / bulk / verify`，引用核验 | [API 文档](https://api.semanticscholar.org/api-docs/) · [Graph API](https://api.semanticscholar.org/api-docs/graph) | 无 key：~1 req / 3-5s（限流较激进，触发 429 即等待）；有 key：100 req/s | 推荐有 key（[申请](https://www.semanticscholar.org/product/api)） |
+| **arXiv** | `--mode multi` 中 arXiv 预印本检索 | [API 用户手册](https://info.arxiv.org/help/api/user-manual.html) · [API Basics](https://info.arxiv.org/help/api/basics.html) · [Terms of Use](https://info.arxiv.org/help/api/tou.html) | 推荐 1 req / 3s（在 `arxiv.Client(delay_seconds=3)` 中已设置）；触发限流后冷却约 5–30 分钟，**search_query 通道触发后会牵连 id_list 通道**（库强制带 `sortBy=relevance`） | 无 key 体系（纯 IP 限流） |
+| **OpenAlex** | `--mode multi` 中跨学科检索（覆盖 2 亿+ 论文） | [API 文档](https://docs.openalex.org/) · [限流与认证](https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication) · [Works 端点](https://docs.openalex.org/api-entities/works) | 默认 100,000 req/day + 10 req/s；提供 `mailto` 进 polite pool（响应更稳定） | ⚠️ **2026-02-13 起调用需要 API key**（[公告](https://groups.google.com/g/openalex-users/c/rI1GIAySpVQ)），credit 制：list=10 credits/req，约 10,000 次搜索/天 |
+| **CrossRef** | `--mode crossref` fallback | [REST API 文档](https://api.crossref.org/swagger-ui/index.html) · [API tips](https://api.crossref.org/) | 无严格速率限制；建议带 `User-Agent: <name>; mailto:<email>` 进 polite pool | 无 key |
+| **DOI Resolver** | DOI → 元数据 / URL 跳转 | [doi.org 文档](https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation/) | 不限流（HTTP 重定向服务） | 无 key |
+
+### 限流诊断速查
+
+- **HTTP 429 from arxiv.org** → 触发 IP 冷却。等 5–30 分钟，**不要**短时间内重试（会延长冷却）。代码已设 `delay_seconds=3` + `num_retries=3`，正常使用应不会触发；批量检索时建议按 `arxiv > sleep 4 > 下一条` 的节奏。
+- **HTTP 429 from S2** → 立刻 fallback 到 `--mode crossref` 或 `--mode multi`（multi 模式即使 S2 失败，arXiv + OpenAlex 仍可返回）。
+- **HTTP 401/403 from openalex.org**（未来可能） → 2026-02-13 后需 API key，[申请 OpenAlex Premium](https://help.openalex.org/hc/en-us/articles/24397762024087-Pricing) 后填入 `config/api.json` 的 `openalex.api_key`（字段尚未启用，留待后续 PR）。
+- **HTTP 5xx** → 上游服务故障，重试或换源。multi 模式天然容错（任一源失败不阻塞其他源）。
+
+### 数据缺失说明
+
+| 字段 | S2 | arXiv | OpenAlex | CrossRef |
+|---|---|---|---|---|
+| `citationCount` | ✅ | ❌ **API 不返回**（预印本库非引用索引） | ✅ (`cited_by_count`) | ✅ (`is-referenced-by-count`) |
+| `abstract` | ✅（部分） | ✅（`<summary>`） | ✅（`abstract_inverted_index` 需重组） | ❌ |
+| `authors[].id` | ✅ (`authorId`) | ❌ | ✅ (OpenAlex ID) | ❌ |
+| `references` | ✅（需 fields=references） | ❌ | ✅ (`referenced_works`) | ✅ (`reference`) |
+
+⚠️ **arxiv-only 论文 `arxiv_status` 字段**：因 arXiv API 不返回 citation，`multi_source_search.py` 对仅在 arxiv 命中、未被 S2/OpenAlex 交叉验证的论文输出 `arxiv_status: "unknown"` 而非 caution/recommended——这是设计如此，避免把高影响力预印本误标为低引用。要拿到引用数请等 S2 或 OpenAlex 也命中（multi 模式默认会自动尝试）。
 
 ## 使用方式
 
@@ -132,7 +171,10 @@ export ARXIV_API_KEY_HEADER=$(get_api_config "arxiv" "api_key_header")
 | 脚本 | API 端点 | 用途 |
 |------|---------|------|
 | `author_info.sh` | Semantic Scholar | 查询作者信息 |
-| `paper_search.sh` | Semantic Scholar, CrossRef | 搜索论文 |
+| `paper_search.sh` (standard/bulk/verify) | Semantic Scholar | 搜索论文 + Tier 0 引用核验 |
+| `paper_search.sh` (crossref) | CrossRef | S2 限流时的 fallback |
+| `paper_search.sh` (multi, v0.5+) | arXiv + Semantic Scholar + OpenAlex | 三源并发 + BM25 重排 |
+| `multi_source_search.py` (v0.5+) | arXiv + Semantic Scholar + OpenAlex | multi 模式实现（被 paper_search.sh 调用） |
 | `doi2bibtex.sh` | DOI | DOI 转 BibTeX |
 | `venue_lookup.sh` | 无（本地数据库） | 查询会议/期刊信息 |
 | `find_evidence.sh` | 无（未实现） | 自动检索论据 |
