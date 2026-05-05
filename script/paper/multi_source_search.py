@@ -92,7 +92,16 @@ class ArxivSource(PaperSource):
             print("[warn] arxiv package not installed; pip install arxiv", file=sys.stderr)
             return []
         # Respect arXiv TOU: 1 req / 3s; let the library handle 429 backoff.
+        # Provide a contact UA so we land in the "polite" handling bucket
+        # (arxiv has no formal polite-pool but treats friendly UAs less harshly).
+        mailto = os.environ.get("PAPER_SKILL_MAILTO", "")
+        ua = f"paper.skill/0.5 ({'mailto:' + mailto if mailto else 'github.com/larbare12/paper.skill'})"
         client = arxiv.Client(page_size=min(limit, 100), delay_seconds=3, num_retries=3)
+        # arxiv >= 2.1 exposes the underlying Session for header customization
+        try:
+            client._session.headers.update({"User-Agent": ua})
+        except AttributeError:
+            pass
         search = arxiv.Search(query=query, max_results=limit,
                               sort_by=arxiv.SortCriterion.Relevance)
         out: list[Paper] = []
