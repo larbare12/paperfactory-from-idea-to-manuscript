@@ -119,7 +119,13 @@ bash script/paper/find_evidence.sh "<完整 claim 一句话>"
 3. 逻辑检查
 4. 投稿前最终润色
 
+## 风格校准（可选但推荐）
+
+> 如果用户提供了 3 篇以上已发表论文样本，**参照 [风格校准协议](../reference/writing/style_calibration_protocol.md) 执行 3 步学习流程**——Step 1 从样本中提取 6 维度作者风格特征（句长/段长/词汇偏好/引用整合方式/修饰语风格/语域切换模式）→ Step 2 生成风格 profile → Step 3 在写作中应用 profile，冲突时按 discipline > journal > personal 优先级裁决。注意区分"安全维度"和"风险维度"。
+
 ## 学术写作规范
+
+> **写作 agent 在执行所有润色和段落生成前，必须先读 [学术写作风格](../reference/writing/academic_writing_style.md)**——该文件定义了四项核心原则（精确性/简洁性/客观性/正式性）、6 大学科的语域差异表、hedging 和 strength 语言的正确使用方式，以及 TEEL 段落结构。下表的禁用词/推荐词/时态规则是该文件的快速参考子集。
 
 ### 禁用词替换
 | 避免使用 | 替换为 | 原因 |
@@ -148,6 +154,8 @@ bash script/paper/find_evidence.sh "<完整 claim 一句话>"
 | 结论/讨论 | 现在时 | "These findings suggest..." |
 
 ## 段落结构
+
+> **段落级决策参照 [写作判断框架](../reference/writing/writing_judgment_framework.md)**：用 Clarity Test 区分 load-bearing paragraphs（核心论证段落，需逐句打磨）vs supporting paragraphs（辅助段落，简明即可）；用 Reader's Journey 四问（where am I / why / takeaway / next）确保读者在每个段落后都能回答"为什么这段在这里"；用 So What 层次表确保每个章节都有明确的智识贡献而非仅描述。
 
 ### PEEL 结构
 - **Point**：段落主旨句
@@ -241,6 +249,9 @@ BERT        | Section 2.1      | Bidirectional Encoder Representations from Tran
 
 ## 章节特定建议
 
+### Abstract
+> **生成摘要时参照 [摘要写作指南](../reference/writing/abstract_writing_guide.md)**——结构化摘要（Background→Problem→Method→Results→Implications）与非结构化摘要有不同的句式模板和词数规则；中英双语摘要需分别遵循各自语言的 5 要素模型；关键词选择遵循领域标准术语。
+
 ### Introduction
 - 从广泛背景到具体问题
 - 突出研究 gap
@@ -263,6 +274,8 @@ BERT        | Section 2.1      | Bidirectional Encoder Representations from Tran
 
 ## 常见错误
 
+> **终稿自审时必须参照 [写作质量检查](../reference/writing/writing_quality_check.md) 执行 5 类规则扫描**——(A) 25 个高频 AI 痕迹词自动替换、(B) 标点模式控制（破折号/分号/冒号列表密度）、(C) throat-clearing 开头句删除、(D) 结构模式警告（Rule of Three / 同义替换循环 / 二元对立 / 镜像结构）、(E) 句式变异度（burstiness）按章节目标调整。
+
 | 错误 | 修正 |
 |-----|------|
 | 模糊主语 "It is important" | 明确主语 "Accurate prediction is critical" |
@@ -280,6 +293,7 @@ BERT        | Section 2.1      | Bidirectional Encoder Representations from Tran
 - ARS: [写作判断框架](../reference/writing/writing_judgment_framework.md) — 写作质量多维评估
 - ARS: [摘要写作指南](../reference/writing/abstract_writing_guide.md) — 双语摘要撰写规范
 - ARS: [风格校准协议](../reference/writing/style_calibration_protocol.md) — 从历史论文学习作者写作风格
+- ARS: [Ground Truth 隔离模式](../reference/research/ground_truth_isolation_pattern.md) — 三层数据隔离防 Anti-Leakage
 - 模板：[双语摘要](../templates/bilingual_abstract_template.md) / [修改追踪](../templates/revision_tracking_template.md)
 
 ---

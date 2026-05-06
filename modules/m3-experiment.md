@@ -77,7 +77,7 @@
 ## 实验设计流程
 
 ### Step 1: 目标明确
-明确实验要验证的假设（来自 M1 的 idea + M2 的文献缺口）
+明确实验要验证的假设（来自 M1 的 idea + M2 的文献缺口）。**参照 [方法论模式目录](../reference/research/methodology_patterns.md) 选择合适的研究方法论模板**——系统文献综述 / 比较案例研究 / 混合方法 / 基准测试等 10 种模板各有对应的设计步骤和质量标准，根据研究问题类型用决策树匹配。
 
 ### Step 2: 数据集选择
 选择合适的数据集，考虑规模、难度、领域代表性
@@ -92,7 +92,7 @@
 确定超参数、随机种子、重复次数
 
 ### Step 6: 消融设计
-设计验证各组件贡献的实验
+设计验证各组件贡献的实验。**同时参照 [统计可视化标准](../reference/writing/statistical_visualization_standards.md) 规划图表类型和色板方案**——用图表类型决策树确定每种数据适合的图（柱状/箱线/热力图等），选定色板（Viridis/Cividis/Tol's），确保黑白打印可读、避免常见可视化陷阱。
 
 ### Step 7: 显著性检验
 设计统计检验方案
@@ -200,7 +200,7 @@ Baseline 方法：[从 M2 的对比文献分类粘贴]
 - ARS: [EQUATOR 报告指南](../reference/research/equator_reporting_guidelines.md) — 各领域实验报告标准
 - ARS: [统计报告标准](../reference/research/statistical_reporting_standards.md) — 统计检验与报告规范
 - ARS: [Artifact 可复现模式](../reference/compliance/artifact_reproducibility_pattern.md) — 实验可复现性配置
-- ARS: [Benchmark 报告模式](../reference/compliance/benchmark_report_pattern.md) — benchmark 发布诚信规范
+
 - ARS: [Ground Truth 隔离模式](../reference/research/ground_truth_isolation_pattern.md) — 数据访问级别声明
 - ARS: [预注册指南](../reference/research/preregistration_guide.md) — 实验预注册最佳实践
 

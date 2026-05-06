@@ -47,10 +47,10 @@
 明确论文的 main claim，用一句话概括
 
 ### A.2 构建证据链
-识别支撑 claim 的关键证据，建立逻辑链条
+识别支撑 claim 的关键证据，建立逻辑链条。**参照 [Claim 验证协议](../reference/review/claim_verification_protocol.md) 执行 E1-E3 三级验证管线**——E1 提取所有定量/事实性 claim → E2 追溯每条 claim 到其引用源 → E3 交叉比对 claim 文本与源文，按 verdict 分类（VERIFIED/MISMATCH/UNVERIFIABLE/SOURCE_NOT_FOUND）标记每条 claim。
 
 ### A.3 推理模式识别
-确定论证类型：演绎/归纳/类比/因果
+确定论证类型：演绎/归纳/类比/因果。**参照 [论证推理框架](../reference/research/argumentation_reasoning_framework.md) 使用 Toulmin 模型（Claim/Data/Warrant/Backing/Qualifier/Rebuttal 六要素）和 IBE（最佳解释推理）系统化分析每条 claim 的论证强度**——若无法明确识别 Warrant，则该论证无论数据量多大都是弱论证。
 
 ### A.4 评估阈值设定
 明确什么程度的证据可以支持 claim
@@ -93,7 +93,7 @@ Intro 提问 → Related Work 定位 → Method 提方案
 
 ## D. 反驳预判（红队）
 
-提前列出审稿人最可能挑的刺，在写作阶段就把回应植入正文，而不是等 rebuttal 才回应。
+提前列出审稿人最可能挑的刺，在写作阶段就把回应植入正文，而不是等 rebuttal 才回应。**DA 攻击阶段参照 [逻辑谬误目录](../reference/research/logical_fallacies.md) 逐条扫描论证链中的 32 种常见逻辑谬误**——formal / informal（相关性/证据/因果/推理）/ statistical 五大类，每种谬误有检测问题和研究案例——确保证据链不依赖谬误推理。
 
 > **本节是 M7 投稿前总检的红队环节直接消费的输入**。M7 不重新造清单，而是回扫 M5 这份反驳预判是否每一条都已在论文中有 preempt。
 

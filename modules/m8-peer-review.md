@@ -78,6 +78,7 @@
 - 数学推导是否正确？
 - 实验设计是否合理？
 - 结论是否有实验支撑？
+- **统计学报告审查**：参照 [统计报告标准](../reference/research/statistical_reporting_standards.md) 执行 8 维度评分（描述性统计/效应量/置信区间/统计效力/缺失数据处理/假设检验/方法选择/报告完整性），按 7 步审计序列检查，识别 p-hacking / HARKing / 选择性报告等红旗信号。
 
 **产出**：方法论严谨性评估报告
 
@@ -116,10 +117,10 @@
 读取 M5 的 `argument_audit[]` 和 M7 段 A 的红队结果，了解已知问题和已 preempt 的反驳。
 
 ### Step 2: 并行评审
-5 个 Agent 并行生成审稿报告（在 LLM 上下文中模拟，实际是同一个 AI 切换 5 个 persona）。
+5 个 Agent 并行生成审稿报告（在 LLM 上下文中模拟，实际是同一个 AI 切换 5 个 persona）。**每个 reviewer agent 评分时必须参照两份文件**——[审稿标准框架](../reference/review/review_criteria_framework.md) 定义评什么（7 个通用维度 + 5 种论文类型的专属 criteria 集、权重分配、aggregation 规则），[质量评估 rubrics](../reference/review/quality_rubrics.md) 定义怎么评（7 维度 × 0-100 分的 behavioral indicators、校准锚点、aggregation 公式）。两份互补，缺一不可。
 
 ### Step 3: 编辑综合决策
-综合 5 份报告，生成：
+综合 5 份报告，**参照 [编辑决策标准](../reference/review/editorial_decision_standards.md) 的决策矩阵将 reviewer 评分映射为 Accept / Minor / Major / Reject**——考虑 reviewer 间一致性、confidence calibration、revision round 政策，以及 desk reject 条件。生成：
 - 总体评估
 - 编辑决策（Accept / Minor Revision / Major Revision / Reject）
 - 决策理由

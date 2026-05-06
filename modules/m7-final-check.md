@@ -63,6 +63,8 @@ grep -A 2 'Rebuttal:' draft/argument-skeleton.md
 
 ## 段 B：格式合规（替代旧 M8）
 
+> **执行段 B 前先读 [期刊投稿指南](../reference/writing/journal_submission_guide.md)**——该文件包含完整的投稿前准备清单、cover letter 模板、各期刊特定要求速查表（含台湾 TSSCI 期刊）、数据可用性声明模板、AI 披露模板和审稿回复信结构。段 B 的 B.1–B.8 清单是该文件的基础子集，细节以该文件为准。
+
 ### B.1 文档结构清单
 - [ ] 必需章节齐全
 - [ ] 章节顺序正确
@@ -206,6 +208,8 @@ C. （投稿后）按收到的审稿意见生成 rebuttal 草稿
 - ARS: [期刊投稿指南](../reference/writing/journal_submission_guide.md) — 各期刊投稿流程与要求
 - ARS: [剽窃检测协议](../reference/compliance/plagiarism_detection_protocol.md) — 文本原创性检查
 - ARS: [常见失败路径](../reference/review/failure_paths.md) — 投稿被拒的高频失败模式
+- ARS: [APA 7th 快速参考](../reference/writing/apa7_style_guide.md) — 文档格式/引用/参考文献/图表规范
+- ARS: [各领域顶级期刊](../reference/review/top_journals_by_field.md) — 投稿目标选择与 EIC 身份校准
 - ARS: [作者署名指南](../reference/writing/credit_authorship_guide.md) — 作者贡献声明规范
 - ARS: [资助声明指南](../reference/writing/funding_statement_guide.md) — 资助信息披露规范
 - ARS: [期刊披露政策](../reference/writing/venue_disclosure_policies.md) — 各期刊 AI 使用披露要求

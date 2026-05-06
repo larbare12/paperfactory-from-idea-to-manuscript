@@ -70,7 +70,7 @@ bash script/paper/paper_search.sh "<query>" --mode multi --year 2020- --limit 30
     > relate-work/search-<slug>-$(date +%Y%m%d).jsonl
 ```
 
-**1.2 筛选**：Agent 阅读 search-*.jsonl，按下面"关键文献分类标准"挑出相关的，得到 bibkey 列表。dry-run 看候选 bibkey：
+**1.2 筛选**：Agent 阅读 search-*.jsonl，按下面"关键文献分类标准"挑出相关的，得到 bibkey 列表。**筛选时参照 [文献来源质量层级](../reference/research/source_quality_hierarchy.md) 对每篇候选论文做 A-F 证据等级评分**——优先保留系统综述/RCT/高引用权威来源，对掠夺性期刊红标论文直接排除。dry-run 看候选 bibkey：
 
 ```bash
 py -3 -c "
@@ -126,12 +126,13 @@ py -3 script/paper/manifest.py prune          # 交互确认
 
 ### Step 3: 引用网络分析
 
-利用 manifest.jsonl 中的 `s2_paper_id` 字段调 S2 references API 分析引用网络（识别核心节点）。可选，对综述章节有价值。
+利用 manifest.jsonl 中的 `s2_paper_id` 字段调 S2 references API 分析引用网络（识别核心节点）。可选，对综述章节有价值。**如果论文属于系统综述类型，参照 [系统综述工具包](../reference/research/systematic_review_toolkit.md) 使用 RoB 2 / ROBINS-I 风险偏倚评估工具和 GRADE 证据确定性框架。**
 
 ### Step 4: 引用密度分析
 检查引用分布是否均衡（M6 写作时会回查）
 
 ### Step 5: 格式规范化
+- **引用格式转换**：参照 [引用格式切换器](../reference/writing/citation_format_switcher.md) 在 APA/IEEE/ACM/MLA/Chicago/Vancouver 之间转换，注意中英文混排引用处理。
 - DOI → BibTeX：`bash script/paper/doi2bibtex.sh "10.1038/..."`
 - 期刊质量：`bash script/paper/venue_lookup.sh "Nature Medicine"`
 - 作者 H-index：`bash script/paper/author_info.sh "<author_id>"`
@@ -241,7 +242,7 @@ py -3 script/paper/manifest.py prune          # 交互确认
 - 文献仓库：[`relate-work/`](../relate-work/)
 - ARS: [文献来源质量层级](../reference/research/source_quality_hierarchy.md) — 引用质量评估体系
 - ARS: [系统综述工具包](../reference/research/systematic_review_toolkit.md) — PRISMA 2020 系统综述方法
-- ARS: [文献监控策略](../reference/research/literature_monitoring_strategies.md) — 持续文献追踪
+
 - ARS: [引用格式切换器](../reference/writing/citation_format_switcher.md) — 多格式引文转换
 - ARS: [Claim 验证协议](../reference/review/claim_verification_protocol.md) — 文献 claim 交叉验证
 

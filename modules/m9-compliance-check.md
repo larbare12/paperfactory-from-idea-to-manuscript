@@ -25,7 +25,7 @@
 
 ## 段 A：PRISMA-trAIce 检查（17 项清单）
 
-> PRISMA-trAIce 是 ARS 项目对 PRISMA 2020 的 AI 化改编，用于审计 AI 辅助研究过程的完整性。
+> PRISMA-trAIce 是 ARS 项目对 PRISMA 2020 的 AI 化改编，用于审计 AI 辅助研究过程的完整性。**以下清单是简化摘要——执行段 A 前 agent 必须先读 [PRISMA-trAIce 协议](../reference/compliance/prisma_trAIce_protocol.md) 获取完整的 17 项清单及其强制/高推荐/推荐/可选的四个层级**（当前简化版丢失了层级信息，可能导致对非强制项做 BLOCK 误判）。
 
 ### A.1 标题与摘要
 - [ ] **Item 1**: 标题是否声明了 AI 辅助？（如要求）
@@ -48,17 +48,17 @@
 - [ ] **Item 12**: 人类在最终决策中的角色是否明确？
 
 ### A.5 其他信息
-- [ ] **Item 13**: 是否声明了资金来源？
+- [ ] **Item 13**: 是否声明了资金来源？**参照 [资助声明指南](../reference/writing/funding_statement_guide.md) 按资助机构格式要求撰写**——台湾 NSTC/MOST 需含学科代码和计划编号，国际机构各有模板；无资助也需声明。
 - [ ] **Item 14**: 是否声明了利益冲突？
 - [ ] **Item 15**: 数据和代码的可用性是否说明？
 - [ ] **Item 16**: AI 工具的具体版本是否记录？
-- [ ] **Item 17**: 是否遵循了目标期刊的 AI 披露政策？
+- [ ] **Item 17**: 是否遵循了目标期刊的 AI 披露政策？**参照 [期刊披露政策](../reference/writing/venue_disclosure_policies.md) 按目标 venue 的 required phrasing 生成**——若目标期刊不在已有的 6 个 venue 列表中，agent 应主动询问用户。
 
 ---
 
 ## 段 B：RAISE 框架检查
 
-> RAISE = Reproducibility, Accountability, Integrity, Safety, Ethics
+> RAISE = Reproducibility, Accountability, Integrity, Safety, Ethics。**注意：以下 B.1–B.5 五维度是 M9 的改编版——原始 [RAISE 框架](../reference/compliance/raise_framework.md) 定义了 4 项原则（人类监督/透明度/可复现性/适用性）+ 8 角色矩阵，且有明确的适用边界（系统综述 vs 一手研究）。执行段 B 前 agent 必须先读源文件，遇到改编版与源文件冲突时以源文件为准。**
 
 ### B.1 可复现性 (Reproducibility)
 - [ ] 实验代码是否可获取？（或说明不可获取的原因）
@@ -66,12 +66,13 @@
 - [ ] 方法描述是否足够详细可复现？
 - [ ] 超参数和随机种子是否报告？
 - [ ] 硬件和软件环境是否说明？
-- **参见**: [artifact_reproducibility_pattern.md](../reference/compliance/artifact_reproducibility_pattern.md)
+- **数据隔离**：参照 [Ground Truth 隔离模式](../reference/research/ground_truth_isolation_pattern.md) 的三层架构（raw inputs / verified artifacts / ground-truth rubrics）确认评估答案从未进入生成上下文窗口，防止 reward hacking。
+- **参见**: [artifact_reproducibility_pattern.md](../reference/compliance/artifact_reproducibility_pattern.md)（`repro_lock` 结构化数据块格式）
 
 ### B.2 可追责性 (Accountability)
 - [ ] AI 辅助内容是否有明确的负责人？
 - [ ] 通讯作者是否对全稿负责？
-- [ ] 作者贡献是否按 CRediT 标准声明？
+- [ ] 作者贡献是否按 CRediT 标准声明？**参照 [作者署名指南](../reference/writing/credit_authorship_guide.md) 的 14 角色分类 + ICMJE 四条件**——确认 AI 不列作者（9 大出版商政策汇总）、贡献矩阵模板正确、致谢与署名的边界清晰。
 - **参见**: [credit_authorship_guide.md](../reference/writing/credit_authorship_guide.md)
 
 ### B.3 诚信 (Integrity)
@@ -79,23 +80,29 @@
 - [ ] 数据是否未篡改？
 - [ ] 图表是否未被美化到误导程度？
 - [ ] 实验结果是否全部报告（不选择性报告）？
+- **AI 失败模式扫描**：参照 [AI 研究失败模式](../reference/compliance/ai_research_failure_modes.md) 逐条检查 7 种模式的阻断条件——implementation errors / citation hallucination / experimental result hallucination / shortcut reliance / reframing errors as novel / methodology fabrication / early-stage perspective lock。每种模式有独立的检测问题和 CLEAR/SUSPECTED/INSUFFICIENT_EVIDENCE 判定规则。
+- **剽窃检测**：参照 [剽窃检测协议](../reference/compliance/plagiarism_detection_protocol.md) 执行第 D 阶段完整性检查——按采样率（Mode 1 为 30%、Mode 2 为 50%）对段落做原创性扫描，按严重度分级（VERBATIM > CLOSE_MATCH > PARAPHRASE > CLEAN）做不同处置。
 - **参见**: [plagiarism_detection_protocol.md](../reference/compliance/plagiarism_detection_protocol.md)
 
 ### B.4 安全 (Safety)
 - [ ] 研究是否涉及敏感数据？（如有，是否合规处理？）
 - [ ] 研究是否涉及人类受试者？（如有，是否有 IRB 审批？）
 - [ ] 研究成果是否可能被滥用？（如有，是否有 mitigations？）
+- **参照 [伦理检查清单](../reference/compliance/ethics_checklist.md) 的安全部分**进行双重用途评估、敏感数据合规检查。
 - **参见**: [ethics_checklist.md](../reference/compliance/ethics_checklist.md)
 
 ### B.5 伦理 (Ethics)
 - [ ] 是否遵守了目标期刊的伦理政策？
 - [ ] 是否获取了必要的数据使用许可？
 - [ ] 是否考虑了研究的公平性和包容性？
+- **参照 [伦理检查清单](../reference/compliance/ethics_checklist.md) 做全面伦理审计**——包含 AI 披露完整性、归因诚信、公平代表性、数据伦理和利益冲突声明。IRB 相关用 [IRB 决策树](../reference/compliance/irb_decision_tree.md) 判断审查级别。
 - **参见**: [irb_decision_tree.md](../reference/compliance/irb_decision_tree.md)
 
 ---
 
 ## 段 C：AI 使用披露
+
+> **生成披露声明前先读两份文件**：[期刊披露政策](../reference/writing/venue_disclosure_policies.md) 提供 6 大 ML/NLP 会议（ICLR/NeurIPS/Nature/Science/ACL/EMNLP）的结构化字段（policy summary、required phrasing、preferred location、prohibited uses），按目标期刊匹配；[资助声明指南](../reference/writing/funding_statement_guide.md) 提供台湾 NSTC/MOST 格式规范（含学科代码）、常见国际资助机构模板（NSF/NIH/ERC/JSPS）以及资助声明与利益冲突声明的区分规则。
 
 ### C.1 期刊 AI 披露政策速查
 
@@ -132,6 +139,8 @@ The authors take full responsibility for the content and accuracy of this paper.
 ---
 
 ## 段 D：完整性门控
+
+> **执行段 D 前 agent 必须先读两份协议**：[合规检查点协议](../reference/compliance/compliance_checkpoint_protocol.md) 定义了 compliance_agent 的运行时行为——如何组合 PRISMA-trAIce 和 RAISE 决策、3 轮覆盖裁决升级阶梯、间隙标签词汇表以及阻断 UX 模板；[完整性审查协议](../reference/compliance/integrity_review_protocol.md) 定义了第 2.5/4.5 阶段门控的精确执行步骤（Stage A–E）、通过/失败规则和各阶段阻断条件。段 D 的 PASS/WARN/BLOCK 三态是两份协议的简化摘要，遇到边界情况以协议原文为准。
 
 ### 门控状态
 
@@ -181,7 +190,10 @@ D. 输出门控状态（PASS / WARN / BLOCK）
 - ARS: [资助声明指南](../reference/writing/funding_statement_guide.md)
 - ARS: [期刊披露政策](../reference/writing/venue_disclosure_policies.md)
 - ARS: [剽窃检测协议](../reference/compliance/plagiarism_detection_protocol.md)
-- ARS: [可复现性审计](../reference/compliance/reproducibility_audit.md)
+- ARS: [AI 研究失败模式](../reference/compliance/ai_research_failure_modes.md) — 7 种 AI 幻觉模式的阻断条件矩阵
+- ARS: [完整性审查协议](../reference/compliance/integrity_review_protocol.md) — 第 2.5/4.5 阶段门控执行步骤
+- ARS: [Ground Truth 隔离模式](../reference/research/ground_truth_isolation_pattern.md) — 三层数据隔离防 Reward Hacking
+
 
 ## Passport I/O
 
