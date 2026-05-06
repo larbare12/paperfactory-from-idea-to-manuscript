@@ -278,6 +278,14 @@ py -3 script/paper/manifest.py prune --yes    # 批量
 
 > Agent 在 M1 末尾必须执行 Stage 1+2+3 一轮，把候选论文落到 manifest。M6 写作时检索补充文献，同样走这三段。**绝对禁止跳过 manifest 直接 cite 论文**——Layer 3 验证以 manifest.jsonl 为权威清单。
 
+### 常见陷阱（实战反思）
+
+以下是 Agent 默认行为容易过度执行的两点，使用三段式工作流前先确认：
+
+- **不要默认多轮检索。** 当用户的引用目标是聚焦的（≤ 5 篇、主题明确，例如"几篇能证明 X 的论文"、"补一篇 baseline"），单次 `paper_search.sh --mode multi --limit 25` 通常已经覆盖所有 strong matches。多跑 2-3 轮（不同关键词）会让 `search-*.jsonl` 在 relate-work/ 冗余堆积，最终选定的 bibkey 多半都来自第 1 轮。**默认 1 轮起步**，仅当第 1 轮命中显著不足或用户明示要做综述级广搜时再扩展。
+
+- **临时调试产物不要落到 relate-work/。** relate-work/ 是用户的论文产物目录，不是 Agent 的 scratch space。以下中间文件应写到系统临时路径（`$TMPDIR` / `mktemp -d`），用完即删：人工预览搜索结果的标题列表、Windows GBK 终端编码 workaround 的 UTF-8 dump、dry-run 输出。落到 relate-work/ 的产物应仅限脚本规定的正式输出（`manifest.*` / `search-<slug>-<date>.jsonl` / `citation_verification_report_*.md` / `pdf/`）。
+
 ---
 
 ### 模块架构（M0 + M1–M9）
