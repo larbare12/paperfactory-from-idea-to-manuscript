@@ -22,3 +22,10 @@ Thumbs.db
 passport.yaml
 passport.*.yaml
 !passport.example.yaml
+
+# v0.6+ PDF cache — manifest.jsonl tracks the metadata, PDFs are local-only
+# (avoids repo bloat; PDFs may also have copyright issues for redistribution)
+relate-work/pdf/*.pdf
+# Python bytecode cache
+__pycache__/
+*.pyc

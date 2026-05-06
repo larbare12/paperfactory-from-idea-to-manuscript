@@ -47,6 +47,11 @@ class Paper:
     source: str = ""
     also_in: list[str] = field(default_factory=list)
     bm25_score: float = 0.0
+    # OA PDF + cross-source IDs (v0.6+)
+    pdf_url: str = ""
+    pdf_status: str = "unknown"  # OA | closed | unknown
+    s2_paper_id: str = ""
+    openalex_id: str = ""
 
 
 # ---------- Sources ----------
@@ -132,6 +137,8 @@ class ArxivSource(PaperSource):
             url=r.entry_id,
             citations=0,
             source=self.name,
+            pdf_url=f"https://arxiv.org/pdf/{arxiv_id}",
+            pdf_status="OA",
         )
 
 
@@ -155,7 +162,10 @@ class SemanticScholarSource(PaperSource):
     def search(self, query, limit, year_from, year_to):
         self._wait()
         url = f"{self.base_url}/graph/v1/paper/search"
-        fields = "paperId,title,year,authors,venue,journal,citationCount,externalIds,url,abstract"
+        # v0.6: openAccessPdf added — schema confirms /paper/search returns it
+        # when listed in fields (FullPaper schema; see config/swagger.json)
+        fields = ("paperId,title,year,authors,venue,journal,citationCount,"
+                  "externalIds,url,abstract,openAccessPdf,isOpenAccess")
         params = {"query": query, "limit": min(limit, 100), "fields": fields}
         if year_from or year_to:
             params["year"] = f"{year_from or ''}-{year_to or ''}"
@@ -168,6 +178,14 @@ class SemanticScholarSource(PaperSource):
             ext = p.get("externalIds") or {}
             journal = p.get("journal") or {}
             venue = p.get("venue") or journal.get("name") or ""
+            oa = p.get("openAccessPdf") or {}
+            pdf_url = oa.get("url") or ""
+            if pdf_url:
+                pdf_status = "OA"
+            elif p.get("isOpenAccess") is False:
+                pdf_status = "closed"
+            else:
+                pdf_status = "unknown"
             out.append(Paper(
                 title=(p.get("title") or "").strip(),
                 abstract=(p.get("abstract") or "").strip(),
@@ -179,6 +197,9 @@ class SemanticScholarSource(PaperSource):
                 url=p.get("url") or "",
                 citations=int(p.get("citationCount") or 0),
                 source=self.name,
+                pdf_url=pdf_url,
+                pdf_status=pdf_status,
+                s2_paper_id=p.get("paperId") or "",
             ))
         return out
 
@@ -210,10 +231,20 @@ class OpenAlexSource(PaperSource):
         for w in data.get("results", []) or []:
             doi = (w.get("doi") or "").replace("https://doi.org/", "") or None
             ids = w.get("ids") or {}
-            primary_loc = (w.get("primary_location") or {}).get("source") or {}
-            venue = primary_loc.get("display_name") or ""
+            primary_location = w.get("primary_location") or {}
+            primary_source = primary_location.get("source") or {}
+            venue = primary_source.get("display_name") or ""
             authors = [(a.get("author") or {}).get("display_name", "")
                        for a in (w.get("authorships") or [])][:10]
+            best_oa = w.get("best_oa_location") or {}
+            pdf_url = best_oa.get("pdf_url") or ""
+            if pdf_url:
+                pdf_status = "OA"
+            elif w.get("is_oa") is False:
+                pdf_status = "closed"
+            else:
+                pdf_status = "unknown"
+            openalex_id = (w.get("id") or "").rsplit("/", 1)[-1] if w.get("id") else ""
             out.append(Paper(
                 title=(w.get("title") or w.get("display_name") or "").strip(),
                 abstract=_invert_openalex_abstract(w.get("abstract_inverted_index")),
@@ -221,10 +252,13 @@ class OpenAlexSource(PaperSource):
                 year=w.get("publication_year"),
                 venue=venue,
                 doi=doi,
-                arxiv_id=_extract_arxiv_id(ids.get("openalex"), w.get("primary_location") or {}),
+                arxiv_id=_extract_arxiv_id(ids.get("openalex"), primary_location),
                 url=w.get("id") or "",
                 citations=int(w.get("cited_by_count") or 0),
                 source=self.name,
+                pdf_url=pdf_url,
+                pdf_status=pdf_status,
+                openalex_id=openalex_id,
             ))
         return out
 
@@ -266,9 +300,24 @@ def _norm_title(t: str) -> str:
     return _WS_RE.sub(" ", t).strip()
 
 
+_PDF_SOURCE_PRIORITY = {"arxiv": 3, "openalex": 2, "s2": 1}
+
+
+def _pick_best_pdf(papers: list[Paper]) -> tuple[str, str, str]:
+    """Among grouped papers, pick the most reliable OA PDF URL.
+    Priority: arxiv direct > openalex best_oa_location > s2 openAccessPdf."""
+    candidates = [(p, _PDF_SOURCE_PRIORITY.get(p.source, 0)) for p in papers if p.pdf_url]
+    if not candidates:
+        return "", "closed" if any(p.pdf_status == "closed" for p in papers) else "unknown", ""
+    candidates.sort(key=lambda x: x[1], reverse=True)
+    best, _ = candidates[0]
+    return best.pdf_url, "OA", best.source
+
+
 def deduplicate(papers: list[Paper]) -> list[Paper]:
     """Group by DOI (preferred) then by normalized title.
-    Keep the version with highest citation_count; record other sources in `also_in`."""
+    Keep the version with highest citation_count; record other sources in `also_in`.
+    Cross-source enrich pdf_url / s2_paper_id / openalex_id / arxiv_id."""
     groups: dict[str, list[Paper]] = {}
     for p in papers:
         key = ("doi:" + p.doi.lower()) if p.doi else ("title:" + _norm_title(p.title))
@@ -287,6 +336,16 @@ def deduplicate(papers: list[Paper]) -> list[Paper]:
                 winner.arxiv_id = p.arxiv_id
             if not winner.abstract and p.abstract:
                 winner.abstract = p.abstract
+            if not winner.s2_paper_id and p.s2_paper_id:
+                winner.s2_paper_id = p.s2_paper_id
+            if not winner.openalex_id and p.openalex_id:
+                winner.openalex_id = p.openalex_id
+        # Choose the best PDF URL across all sources in this group
+        winner.pdf_url, winner.pdf_status, _ = _pick_best_pdf(items)
+        # If we now know an arxiv_id but the picked pdf isn't arxiv, prefer arxiv direct
+        if winner.arxiv_id and not winner.pdf_url.startswith("https://arxiv.org/pdf/"):
+            winner.pdf_url = f"https://arxiv.org/pdf/{winner.arxiv_id}"
+            winner.pdf_status = "OA"
         merged.append(winner)
     return merged
 
@@ -357,6 +416,11 @@ def to_output_dict(p: Paper) -> dict:
         "source": p.source,
         "also_in": p.also_in,
         "bm25_score": round(p.bm25_score, 4),
+        # v0.6: cross-source IDs + OA PDF link for the manifest pipeline
+        "pdf_url": p.pdf_url,
+        "pdf_status": p.pdf_status,
+        "s2_paper_id": p.s2_paper_id,
+        "openalex_id": p.openalex_id,
     }
 
 

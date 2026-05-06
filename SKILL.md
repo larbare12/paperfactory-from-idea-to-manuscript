@@ -112,8 +112,8 @@ description: |
 - **任何 Tier 0（高风险）幻觉未消除 → 禁止进入 M7**
 
 #### Layer 3：内容一致性（论证阶段）
-- 引用论文的核心论点、数值、结论，Agent 不得复述记忆，必须从 `relate-work/` 中真实存在的 PDF/摘要 中摘录
-- 若 `relate-work/` 中没有该论文的全文 → 标记 `[NEEDS-EVIDENCE]` 并在 M6 检查中回填
+- 引用论文的核心论点、数值、结论，Agent 不得复述记忆，必须从 `relate-work/manifest.jsonl` 中 status=`downloaded`/`user-supplied` 的论文全文里摘录（v0.6+：以 manifest 为唯一权威清单）
+- 若 manifest 中该 bibkey 的 status=`missing` 或 `pending`（PDF 尚未到位）→ 标记 `[NEEDS-EVIDENCE]` 并在 M6 检查中回填
 - 见 [M6 写作辅助](modules/m6-writing.md) 的 "MATERIAL GAP IRON RULE"
 
 ### 红线清单（任何一条触发立即 STOP）
@@ -124,6 +124,86 @@ description: |
 - 🚫 跳过 `verify_citations.sh` 直接进入 M7
 
 > Agent 在 M2 结束、M6 进入前、M7 进入前 **三个时点**，必须主动运行 `verify_citations.sh` 并把报告路径告诉用户。
+
+---
+
+## 📚 文献检索三段式工作流（v0.6+）
+
+**首次检索 / 写作中补充检索 / 综述章节扩展，统一走这三段。** 不再有"Agent 拿到 search 结果后人工逐篇下载 PDF"的乱流——所有重复操作脚本化以省 token。
+
+### Stage 1：广搜
+
+```bash
+bash script/paper/paper_search.sh "<query>" --mode multi --year 2020- --limit 30 \
+     > relate-work/search-<slug>-$(date +%Y%m%d).jsonl
+```
+
+三源（arXiv + S2 + OpenAlex）并发 + BM25 重排（v0.5 已有）。每条记录含新字段 `pdf_url` / `pdf_status` / `s2_paper_id` / `openalex_id`，供 Stage 3 使用。
+
+### Stage 2：筛选
+
+Agent 阅读 search-*.jsonl，**用判断力**决定哪些与本工作真正相关（基础/方法/对比/相关四类，对应 manifest 的 `tags` 字段）。**Agent 不亲手写 JSONL**，调 helper 批量入表：
+
+```bash
+bash script/paper/collect_papers.sh \
+     --search relate-work/search-<slug>-<date>.jsonl \
+     --bibkeys vaswani-2017-attention,kipf-2017-semi,...
+```
+
+bibkey 算法：`<第一作者姓 ascii lower>-<年>-<标题前2个非停用词>`，例 `vaswani-2017-attention`。冲突自动加 `-2`/`-3` 后缀。Agent 选 bibkey 时可以先 dry-run 看候选：
+
+```bash
+py -3 -c "
+import sys, json
+sys.path.insert(0, 'script/paper')
+from manifest import make_bibkey
+with open('relate-work/search-X.jsonl') as f:
+    taken = set()
+    for line in f:
+        e = json.loads(line)
+        bk = make_bibkey(e, taken); taken.add(bk)
+        print(bk, '|', e['title'][:60])
+"
+```
+
+### Stage 3：收集（脚本自动）
+
+`collect_papers.sh` 内部按顺序跑：
+
+1. `manifest.py add` —— 把选定的 bibkeys 入 `relate-work/manifest.jsonl`，status=`pending`
+2. `manifest.py download` —— 优先 arxiv 直链 > OpenAlex `best_oa_location` > S2 `openAccessPdf`，成功的 PDF 落 `relate-work/pdf/<bibkey>.pdf` 并设 status=`downloaded`，失败的设 status=`missing`
+3. `manifest.py render` —— 生成 `manifest.md`（全表）+ `missing.md`（待人工补全清单 + 建议来源链接）
+
+### Stage 4：用户人工补全闭源
+
+闭源期刊（IEEE Trans / Elsevier / 部分 Springer）拿不到 OA PDF。Agent 把 `relate-work/missing.md` 显示给用户，用户从机构订阅手动下载，重命名为 `<bibkey>.pdf` 放进 `relate-work/pdf/`，再跑：
+
+```bash
+py -3 script/paper/manifest.py scan      # 检测新 PDF，状态变 user-supplied
+```
+
+### Stage 5：删除找不到的
+
+对仍 missing 的，用户也无法找到时，向用户确认后从 manifest 移除：
+
+```bash
+py -3 script/paper/manifest.py prune          # 交互式 y/n
+py -3 script/paper/manifest.py prune --yes    # 批量
+```
+
+### 状态语义（manifest.jsonl 的 `status` 字段）
+
+| status | 含义 |
+|---|---|
+| `pending` | 刚 add，尚未尝试下载 |
+| `downloaded` | 脚本自动 OA 下载成功 |
+| `user-supplied` | 用户手动放进来后被 scan 识别 |
+| `missing` | 下载失败，无 OA URL，等用户补 |
+| `manual` | 用户标记不下载（保留元数据，不索取 PDF） |
+
+详细字段约定见 [`relate-work/MANIFEST_SCHEMA.md`](relate-work/MANIFEST_SCHEMA.md)。
+
+> Agent 在 M1 末尾必须执行 Stage 1+2+3 一轮，把候选论文落到 manifest。M6 写作时检索补充文献，同样走这三段。**绝对禁止跳过 manifest 直接 cite 论文**——Layer 3 验证以 manifest.jsonl 为权威清单。
 
 ---
 
@@ -144,6 +224,8 @@ description: |
 | **M8** | [同行评审仿真](modules/m8-peer-review.md) | 多视角审稿模拟（领域/方法/专家/跨领域/DA）+ 编辑决策 + 修改路线图 | 评审 |
 | **M9** | [合规与伦理检查](modules/m9-compliance-check.md) | PRISMA-trAIce 17 项 + RAISE 五维度 + AI 披露 + 最终门控 | 合规 / 投稿 |
 
+> **v0.6 变更说明**（2026-05-06）：新增**三段式文献工作流**（广搜 → 筛选 → 收集）。`multi_source_search.py` 输出补充 `pdf_url`/`pdf_status`/`s2_paper_id`/`openalex_id` 四个字段（S2 fields 加 `openAccessPdf`，OpenAlex 走 `best_oa_location`，arXiv 走直链）。新增 `script/paper/manifest.py`（add / download / scan / render / prune / list 六个子命令）维护 `relate-work/manifest.jsonl` 作为 single source of truth；新增 `script/paper/collect_papers.sh` 三步合一封装。开放获取论文 PDF 自动下载到 `relate-work/pdf/<bibkey>.pdf`，闭源走 `missing.md` 引导用户手动补全。manifest 字段约定见 [`relate-work/MANIFEST_SCHEMA.md`](relate-work/MANIFEST_SCHEMA.md)。
+>
 > **v0.5 变更说明**（2026-05-05）：新增 `paper_search.sh --mode multi`，整合 arXiv + Semantic Scholar + OpenAlex 三源并发检索 + BM25 重排（蒸馏自 papercircle-main 项目，~400 行 Python）。原 standard/bulk/crossref/verify 四模式保持不变。新增依赖：`rank-bm25` + `arxiv` + `requests`（见 `requirements.txt`，仅 multi 模式需要）。仅在 arxiv 命中、未被 S2/OpenAlex 交叉验证的预印本，`arxiv_status` 标为 `unknown`（而非 caution），因 arXiv API 不返回 `citationCount`。各源官方文档与限流参考见 [`config/README.md`](config/README.md) "外部 API 参考与限流" 表。
 >
 > **v0.4 变更说明**（2026-05-04）：新增三大硬约束（首段已展开）——(1) 初始化检查：API 凭据 + `config/` 目录 + git 工作区三项门控；(2) Git 版本控制全程强制：分支命名、commit 边界、禁止动作清单；(3) 反幻觉硬约束：三层验证（来源 → 引用 → 内容）+ 四条红线，强制在 M2/M6/M7 三个时点运行 `verify_citations.sh`。整合 ARS prompt 资产后修复 reference 链接（PR #9、#10）。
@@ -256,8 +338,9 @@ M1–M7 自动串联（M0 持续监控状态）
 
 ---
 
-*Skill 版本: 0.5*
-*最后更新: 2026-05-05*
+*Skill 版本: 0.6*
+*最后更新: 2026-05-06*
 *基于 Relic 论文八层提取法 + academic-research-skills prompt 资产整合*
+*v0.6 新增：三段式文献工作流（广搜→筛选→收集）+ `manifest.py` 自动 OA PDF 下载 + relate-work 文献清单维护*
 *v0.5 新增：多源检索 + BM25 重排（`paper_search.sh --mode multi`，蒸馏自 papercircle-main）*
 *v0.4 新增：初始化检查 / Git 强制版本控制 / 反幻觉三层验证*

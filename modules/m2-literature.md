@@ -52,23 +52,78 @@ bash script/paper/paper_search.sh "diffusion models for molecular generation" \
     > relate-work/search-multi-$(date +%Y%m%d).jsonl
 ```
 
-输出每行一个 JSON 对象，**额外字段**：`source`（arxiv/s2/openalex）、`also_in`（同一篇被几个源同时检出，自动去重保留 citation 最高版本）、`bm25_score`（重排分数，已降序）。
+输出每行一个 JSON 对象，**额外字段**：`source`（arxiv/s2/openalex）、`also_in`（同一篇被几个源同时检出，自动去重保留 citation 最高版本）、`bm25_score`（重排分数，已降序）；**v0.6 新增** `pdf_url` / `pdf_status` / `s2_paper_id` / `openalex_id` 供下游 manifest 使用。
 
 > **依赖**：multi 模式需要 `pip install -r requirements.txt`（rank-bm25 + arxiv + requests，约 5MB）。其他四模式无 Python 依赖。
 
-### Step 1: 文献采集
-读取 `relate-work/search-*.json`，必要时再补一次 `paper_search.sh`
+### Step 1: 三段式工作流（v0.6+，强制）
 
-### Step 2: 引用网络构建
-分析文献间的引用关系，识别核心节点
+> **流程：广搜 → 筛选 → 收集**。所有重复操作脚本化，Agent 不再亲手写 JSONL/下 PDF/对账。详细流程总览见 [SKILL.md "📚 文献检索三段式工作流"](../SKILL.md) 章节，本节给出操作细节。
 
-### Step 3: 关键文献分类
-- **基础文献**：领域奠基性工作
-- **方法文献**：直接相关的方法论文
-- **对比文献**：需要对比的 baseline（→ M3 实验对照组直接消费）
-- **相关文献**：拓展阅读、边缘相关
+**1.1 广搜**（如果 M1 已经做过 Layer 0 可直接复用 search-*.jsonl）：
 
-每篇精读论文写一张卡 `relate-work/ref-<bibkey>.md`。
+```bash
+bash script/paper/paper_search.sh "<query>" --mode multi --year 2020- --limit 30 \
+    > relate-work/search-<slug>-$(date +%Y%m%d).jsonl
+```
+
+**1.2 筛选**：Agent 阅读 search-*.jsonl，按下面"关键文献分类标准"挑出相关的，得到 bibkey 列表。dry-run 看候选 bibkey：
+
+```bash
+py -3 -c "
+import sys, json
+sys.path.insert(0, 'script/paper')
+from manifest import make_bibkey
+with open('relate-work/search-X.jsonl', encoding='utf-8') as f:
+    taken = set()
+    for ln in f:
+        e = json.loads(ln); bk = make_bibkey(e, taken); taken.add(bk)
+        print(bk, '|', e['title'][:60], '|', e['venue'], '|', e['pdf_status'])
+"
+```
+
+**1.3 收集**：
+
+```bash
+bash script/paper/collect_papers.sh \
+    --search relate-work/search-<slug>-<date>.jsonl \
+    --bibkeys vaswani-2017-attention,kipf-2017-semi,...
+```
+
+完成后：
+- 已下载 PDF 在 `relate-work/pdf/<bibkey>.pdf`
+- 全表渲染为 `relate-work/manifest.md`
+- 缺失清单 `relate-work/missing.md` 显示给用户手动补全
+- 真相在 `relate-work/manifest.jsonl`（single source of truth）
+
+**1.4 用户补全 + scan**：
+
+```bash
+# 用户从机构订阅下载缺失论文，重命名为 <bibkey>.pdf 放进 relate-work/pdf/
+py -3 script/paper/manifest.py scan
+```
+
+**1.5 删除找不到的**：
+
+```bash
+py -3 script/paper/manifest.py prune          # 交互确认
+# 或 prune --yes 批量删除剩余 missing
+```
+
+### Step 2: 关键文献分类（写入 manifest.tags 字段）
+
+按下面四类标记 manifest 条目的 `tags` 字段（Agent 调 `manifest.py` 添加，或 M2 末尾批量改）：
+
+- **`foundational` 基础文献**：领域奠基性工作
+- **`method` 方法文献**：直接相关的方法论文
+- **`baseline` 对比文献**：需要对比的实验 baseline（→ M3 实验对照组直接消费）
+- **`related` 相关文献**：拓展阅读、边缘相关
+
+精读的论文可继续写一张笔记卡 `relate-work/ref-<bibkey>.md`（保留旧约定，作为 Layer 3 内容一致性的人工备注层；manifest 是元数据层）。
+
+### Step 3: 引用网络分析
+
+利用 manifest.jsonl 中的 `s2_paper_id` 字段调 S2 references API 分析引用网络（识别核心节点）。可选，对综述章节有价值。
 
 ### Step 4: 引用密度分析
 检查引用分布是否均衡（M6 写作时会回查）
@@ -79,13 +134,15 @@ bash script/paper/paper_search.sh "diffusion models for molecular generation" \
 - 作者 H-index：`bash script/paper/author_info.sh "<author_id>"`
 
 ### Step 6: 缺失识别
-识别关键文献缺口，触发新一轮 M1 bulk 检索
+跑 `py -3 script/paper/manifest.py list` 看 `pending`/`missing` 计数；如果发现关键空白，回 M1 / Step 1 再补一轮 multi 检索。
 
 ### Step 7: 引用逻辑优化
 确保引用支撑论证逻辑（与 M5 论证设计联动）
 
 ### Step 8: 最终检查
-生成引用完整性报告（M0 仪表盘消费此报告）
+- `py -3 script/paper/manifest.py render` 生成最新 manifest.md / missing.md
+- 跑 `verify_citations.sh` 做 Tier 0 引用核验
+- 报告写入 `relate-work/citation_verification_report_<timestamp>.md`
 
 ## 关键文献分类标准
 

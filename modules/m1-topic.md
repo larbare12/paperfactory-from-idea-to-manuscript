@@ -37,20 +37,34 @@
 
 ### Layer 0: 文献基线建立（先做，**所有后续判断的依据**）
 
-在做任何主观判断之前，先拉一批与 idea 相关的论文作为诊断基线：
+在做任何主观判断之前，先拉一批与 idea 相关的论文作为诊断基线。**v0.6 推荐用 `--mode multi`**（三源 + BM25 + OA PDF 字段一步到位），bulk 模式仅在需要 >100 条候选池时使用：
 
 ```bash
-# 大批量拉相关论文（bulk 端点支持年份过滤、limit 上限大）
+# 推荐：三源并发 + BM25 重排 + 输出 OA PDF 字段（v0.5+）
 bash script/paper/paper_search.sh "<idea 关键词组合>" \
-     --mode bulk --year "2020-" --limit 50 \
-     > relate-work/search-<idea-slug>-$(date +%Y%m%d).json
+     --mode multi --year "2020-" --limit 30 \
+     > relate-work/search-<idea-slug>-$(date +%Y%m%d).jsonl
+
+# 备选：S2 单源大批量（>100 条）
+# bash script/paper/paper_search.sh "<...>" --mode bulk --year "2020-" --limit 200 \
+#      > relate-work/search-<idea-slug>-$(date +%Y%m%d).json
 ```
 
 落盘后这批论文成为：
 - 本模块 Layer 3 / Layer 5 / Layer 6 的**证据来源**
 - 后续 M2 文献分类、M5 论证设计、M6 写作时的**本地检索池**（不要丢）
 
-如果 S2 触发 429，切换到 `--mode crossref` 重试。
+如果 S2 触发 429，multi 模式会自动 fallback（arXiv + OpenAlex 仍能返回）。bulk 模式 429 时切换到 `--mode crossref`。
+
+**v0.6 强制：Layer 0 完成后立即进入"三段式工作流"的 Stage 2/3**——Agent 阅读 search jsonl，挑出与 idea 相关的论文，调 `collect_papers.sh` 一键入 manifest + 自动 OA 下载：
+
+```bash
+bash script/paper/collect_papers.sh \
+     --search relate-work/search-<idea-slug>-$(date +%Y%m%d).jsonl \
+     --bibkeys <筛选过的 bibkey 列表，逗号分隔>
+```
+
+闭源拿不到 PDF 的论文会写入 `relate-work/missing.md`，向用户呈现待人工补全清单。详见 [SKILL.md 三段式文献工作流](../SKILL.md) 章节。
 
 ### Layer 1: Idea 捕获
 提取用户输入的核心研究问题
