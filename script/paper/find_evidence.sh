@@ -22,8 +22,10 @@
 
 # 初始化
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
-RELATE_DIR="$PROJECT_ROOT/relate-work"
+PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}}"
+PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
+PROJECT_ROOT="${PAPER_SKILL_DIR}"  # back-compat alias for load_config.sh
+RELATE_DIR="$PAPER_PROJECT_DIR/relate-work"
 
 source "$SCRIPT_DIR/load_config.sh" 2>/dev/null || true
 
@@ -112,7 +114,7 @@ search_local() {
                 continue
             fi
 
-            local rel_path="${json_file#$PROJECT_ROOT/}"
+            local rel_path="${json_file#$PAPER_PROJECT_DIR/}"
             local score="0.3"
 
             # Extract individual paper entries from JSON array using jq
@@ -164,7 +166,7 @@ search_local() {
                 continue
             fi
 
-            local rel_path="${md_file#$PROJECT_ROOT/}"
+            local rel_path="${md_file#$PAPER_PROJECT_DIR/}"
             local score
             if [[ "$in_filename" == true ]]; then
                 score="0.6"

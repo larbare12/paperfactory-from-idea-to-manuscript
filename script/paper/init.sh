@@ -1,40 +1,59 @@
 #!/bin/bash
-# 初始化脚本 - 加载配置和设置路径变量
+# 初始化脚本 - 加载配置并设置 skill / project 两个根目录
 # 用法: source script/paper/init.sh
 #
-# 路径约定（已脱离 citation-assistant-main，整合进 paper.skill）：
-#   <PROJECT_ROOT>/script/paper/   ← 本脚本位置
-#   <PROJECT_ROOT>/reference/        ← sqlite 数据库 + 写作指南
-#   <PROJECT_ROOT>/relate-work/    ← M1 写入、M3/M6 读取
-#   <PROJECT_ROOT>/.env            ← S2_API_KEY 等
+# 路径约定（v0.6+ 起明确区分）：
+#   $PAPER_SKILL_DIR/                   ← skill 安装目录（本仓库根）
+#       script/paper/                   ← 本脚本位置
+#       config/api.json                 ← API 端点配置（共享）
+#       reference/                      ← sqlite + 写作指南（共享）
+#       modules/                        ← M0-M9 文档（共享）
+#
+#   $PAPER_PROJECT_DIR/                 ← 论文项目工作目录（per-paper，默认 $PWD）
+#       relate-work/                    ← M1/M2 写入；manifest.jsonl 等
+#       relate-work/pdf/                ← OA PDF 缓存
+#       draft/                          ← M4-M6 写入
+#       references.bib                  ← M2 维护
+#       .env                            ← 项目级覆盖（可选；通常用 SKILL_DIR/.env）
+#
+# 环境变量优先级（向后兼容旧 PAPER_SKILL_ROOT）：
+#   PAPER_SKILL_DIR  > PAPER_SKILL_ROOT > 脚本上两级路径
+#   PAPER_PROJECT_DIR > $PWD
 
-# 获取项目根目录
-if [[ -n "${PAPER_SKILL_ROOT:-}" ]]; then
-    PROJECT_ROOT="${PAPER_SKILL_ROOT}"
+# Skill 安装目录
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -n "${PAPER_SKILL_DIR:-}" ]]; then
+    : # already set
+elif [[ -n "${PAPER_SKILL_ROOT:-}" ]]; then
+    PAPER_SKILL_DIR="${PAPER_SKILL_ROOT}"  # back-compat alias
 elif [[ -n "${CLAUDE_SKILL_ROOT:-}" ]]; then
-    # 兼容旧变量
-    PROJECT_ROOT="${CLAUDE_SKILL_ROOT}"
+    PAPER_SKILL_DIR="${CLAUDE_SKILL_ROOT}"  # legacy
 else
-    # 从 script/paper/ 向上两级
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+    PAPER_SKILL_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 fi
 
-# 加载 .env 文件和 API 配置（如果存在）
-if [[ -f "$PROJECT_ROOT/.env" ]]; then
-    set -a
-    source "$PROJECT_ROOT/.env"
-    set +a
+# 论文项目工作目录（默认 cwd）
+PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
+
+# Back-compat: PROJECT_ROOT used to mean SKILL_DIR in old scripts
+PROJECT_ROOT="${PAPER_SKILL_DIR}"
+
+# 加载 .env：优先项目目录，其次 skill 目录（API key 通常用户级，放 skill 一份复用）
+if [[ -f "$PAPER_PROJECT_DIR/.env" ]]; then
+    set -a; source "$PAPER_PROJECT_DIR/.env"; set +a
+elif [[ -f "$PAPER_SKILL_DIR/.env" ]]; then
+    set -a; source "$PAPER_SKILL_DIR/.env"; set +a
 fi
 
 # 加载 API 配置
-if [[ -f "$PROJECT_ROOT/script/paper/load_config.sh" ]]; then
-    source "$PROJECT_ROOT/script/paper/load_config.sh"
+if [[ -f "$PAPER_SKILL_DIR/script/paper/load_config.sh" ]]; then
+    source "$PAPER_SKILL_DIR/script/paper/load_config.sh"
 fi
 
-# 数据目录与工作目录
-export SKILL_DATA_DIR="$PROJECT_ROOT/reference"
-export RELATE_WORK_DIR="$PROJECT_ROOT/relate-work"
+# 数据目录与工作目录（导出供其他脚本使用）
+export PAPER_SKILL_DIR PAPER_PROJECT_DIR PROJECT_ROOT
+export SKILL_DATA_DIR="$PAPER_SKILL_DIR/reference"
+export RELATE_WORK_DIR="$PAPER_PROJECT_DIR/relate-work"
 
 # Rate limit 配置
 export S2_RATE_LIMIT_FILE="/tmp/.s2_rate_limit"

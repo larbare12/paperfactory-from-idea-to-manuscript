@@ -18,11 +18,13 @@
 
 set -e
 
-# 初始化（脚本位置: <PROJECT_ROOT>/script/paper/）
+# 初始化（v0.6+：拆分 SKILL_DIR / PROJECT_DIR）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}}"
+PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
+PROJECT_ROOT="${PAPER_SKILL_DIR}"  # back-compat alias used by helpers below
 
-# 加载配置
+# 加载配置（用 SKILL_DIR 找 config/api.json）
 source "$SCRIPT_DIR/load_config.sh"
 
 # 解析参数
@@ -338,7 +340,10 @@ case "$MODE" in
             exit 1
         fi
 
-        export PAPER_SKILL_ROOT="$PROJECT_ROOT"
+        # Pass both: SKILL_DIR for config/api.json, PROJECT_DIR for any future use
+        export PAPER_SKILL_DIR="$PAPER_SKILL_DIR"
+        export PAPER_PROJECT_DIR="$PAPER_PROJECT_DIR"
+        export PAPER_SKILL_ROOT="$PAPER_SKILL_DIR"  # back-compat alias
         # 默认 jsonl 输出，与 standard 模式逐条 JSON 行为一致
         "${PYTHON_CMD[@]}" "$SCRIPT_DIR/multi_source_search.py" \
             --query "$QUERY" \

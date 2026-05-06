@@ -2,25 +2,31 @@
 # 配置加载函数 - 被其他脚本 source 调用
 # 用法: source script/paper/load_config.sh
 
-# 获取项目根目录
-if [[ -n "${PAPER_SKILL_ROOT:-}" ]]; then
-    PROJECT_ROOT="${PAPER_SKILL_ROOT}"
+# 解析 SKILL_DIR（v0.6+：与 PROJECT_DIR 区分）
+if [[ -n "${PAPER_SKILL_DIR:-}" ]]; then
+    : # already set
+elif [[ -n "${PAPER_SKILL_ROOT:-}" ]]; then
+    PAPER_SKILL_DIR="${PAPER_SKILL_ROOT}"  # back-compat
 elif [[ -n "${CLAUDE_SKILL_ROOT:-}" ]]; then
-    PROJECT_ROOT="${CLAUDE_SKILL_ROOT}"
+    PAPER_SKILL_DIR="${CLAUDE_SKILL_ROOT}"
 else
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+    PAPER_SKILL_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+fi
+PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
+
+# Back-compat: PROJECT_ROOT used to mean SKILL_DIR
+PROJECT_ROOT="${PAPER_SKILL_DIR}"
+
+# 加载 .env：优先项目目录，其次 skill 目录
+if [[ -f "$PAPER_PROJECT_DIR/.env" ]]; then
+    set -a; source "$PAPER_PROJECT_DIR/.env"; set +a
+elif [[ -f "$PAPER_SKILL_DIR/.env" ]]; then
+    set -a; source "$PAPER_SKILL_DIR/.env"; set +a
 fi
 
-# 加载 .env 文件（如果存在）
-if [[ -f "$PROJECT_ROOT/.env" ]]; then
-    set -a
-    source "$PROJECT_ROOT/.env"
-    set +a
-fi
-
-# 加载 API 配置
-CONFIG_FILE="$PROJECT_ROOT/config/api.json"
+# 加载 API 配置（始终从 SKILL_DIR）
+CONFIG_FILE="$PAPER_SKILL_DIR/config/api.json"
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "Error: Config file not found at $CONFIG_FILE" >&2
     exit 1

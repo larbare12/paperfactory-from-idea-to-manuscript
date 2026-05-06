@@ -127,6 +127,79 @@ description: |
 
 ---
 
+## 📁 项目目录结构（v0.6+ 重要约定）
+
+> **paper.skill 是工具库，不是项目仓库。** 它被多个论文项目共享调用，自身**不存放**任何具体论文的产物（manifest、PDF、草稿）。
+
+### 两类目录的明确区分
+
+| 类型 | 路径变量 | 默认值 | 内容 |
+|---|---|---|---|
+| **Skill 安装目录**（共享） | `$PAPER_SKILL_DIR` | 脚本所在仓库根（`paper.skill/`）| `script/`、`config/`、`modules/`、`reference/`、`docs/`、`templates/` |
+| **论文项目工作目录**（per-paper） | `$PAPER_PROJECT_DIR` | 当前 cwd（`pwd`） | `relate-work/`、`draft/`、`references.bib`、`.env`（可选）|
+
+**典型用法**：
+
+```bash
+# 1. clone skill 一次（放到方便的位置，如 ~/skills/paper.skill）
+git clone https://github.com/larbare12/paper.skill.git ~/skills/paper.skill
+
+# 2. 为每篇论文新建一个项目目录
+mkdir -p ~/papers/Y.Nie_EM-SDPD_paper01_2605
+cd ~/papers/Y.Nie_EM-SDPD_paper01_2605
+
+# 3. 在项目目录下跑 skill 的脚本
+bash ~/skills/paper.skill/script/paper/paper_search.sh "..." --mode multi --limit 30 \
+     > relate-work/search-emsdpd-$(date +%Y%m%d).jsonl
+bash ~/skills/paper.skill/script/paper/collect_papers.sh \
+     --search relate-work/search-emsdpd-*.jsonl --bibkeys ...
+
+# 产物自动落到 ~/papers/Y.Nie_EM-SDPD_paper01_2605/relate-work/
+# Skill 自身保持干净，可被其他论文项目复用
+```
+
+### 推荐的论文项目目录结构
+
+```
+<paper-project-dir>/                 ← cwd，例 ~/papers/Y.Nie_EM-SDPD_paper01_2605/
+├── relate-work/                     ← M1/M2/M6 写入；single source of truth = manifest.jsonl
+│   ├── manifest.jsonl               ← 文献清单（脚本维护，不要手动改）
+│   ├── manifest.md                  ← 渲染视图（manifest.py render 生成）
+│   ├── missing.md                   ← 待人工补全清单（manifest.py render 生成）
+│   ├── search-<slug>-<date>.jsonl   ← multi 模式的检索结果
+│   ├── ref-<bibkey>.md              ← 精读笔记卡（M2 写入，可选）
+│   ├── citation_verification_report_*.md  ← Tier 0 引用核验报告（verify_citations.sh）
+│   └── pdf/                         ← OA PDF 自动下载 + 用户手动补全
+│       ├── vaswani-2017-attention.pdf
+│       └── ...
+├── draft/                           ← M4-M6 写作产物
+│   ├── outline.md                   ← M4 章节骨架
+│   ├── argument-map.md              ← M5 论证设计
+│   ├── main.tex / main.md           ← 主文
+│   └── sections/                    ← 分章节草稿
+├── references.bib                   ← M2 维护的 BibTeX 文件
+├── passport.yaml                    ← M0-M9 跨模块 passport（可选）
+└── .env                             ← 项目级覆盖（可选；默认用 skill 安装目录的 .env）
+```
+
+### 为什么 .env 默认放在 skill 安装目录？
+
+`S2_API_KEY` 是用户级凭据，所有论文项目共享。脚本加载 `.env` 时**优先读项目目录**（如果有），否则回退到 skill 安装目录——既支持"一次配置全局复用"，也支持单项目覆盖。
+
+### 环境变量速查
+
+| 环境变量 | 含义 | 何时设置 |
+|---|---|---|
+| `PAPER_SKILL_DIR` | skill 安装位置 | 通常脚本自动算（基于 BASH_SOURCE）；非标准位置可手动 export |
+| `PAPER_PROJECT_DIR` | 论文项目工作目录 | 通常用 `cd` 即可（默认 `$PWD`）；从外部调用时显式 export |
+| `PAPER_SKILL_ROOT` | （旧）SKILL_DIR 的别名 | 向后兼容 v0.5 之前的脚本，新代码不用 |
+| `PAPER_SKILL_MAILTO` | OpenAlex polite pool 邮箱 | 可选，进 polite 通道用 |
+| `S2_API_KEY` | Semantic Scholar API key | 必填，写在 `.env` |
+
+> Agent 在每次进入 M1（首次检索文献）前，必须：(1) 确认当前 cwd 就是论文项目目录（`pwd` 显示的是 `<paper-project-dir>` 而非 skill 仓库），(2) 检查 `relate-work/` 是否存在（不在则 `mkdir`）。**禁止把任何项目产物写到 skill 安装目录里**。
+
+---
+
 ## 📚 文献检索三段式工作流（v0.6+）
 
 **首次检索 / 写作中补充检索 / 综述章节扩展，统一走这三段。** 不再有"Agent 拿到 search 结果后人工逐篇下载 PDF"的乱流——所有重复操作脚本化以省 token。
@@ -201,7 +274,7 @@ py -3 script/paper/manifest.py prune --yes    # 批量
 | `missing` | 下载失败，无 OA URL，等用户补 |
 | `manual` | 用户标记不下载（保留元数据，不索取 PDF） |
 
-详细字段约定见 [`relate-work/MANIFEST_SCHEMA.md`](relate-work/MANIFEST_SCHEMA.md)。
+详细字段约定见 [`docs/MANIFEST_SCHEMA.md`](docs/MANIFEST_SCHEMA.md)。
 
 > Agent 在 M1 末尾必须执行 Stage 1+2+3 一轮，把候选论文落到 manifest。M6 写作时检索补充文献，同样走这三段。**绝对禁止跳过 manifest 直接 cite 论文**——Layer 3 验证以 manifest.jsonl 为权威清单。
 
@@ -224,7 +297,7 @@ py -3 script/paper/manifest.py prune --yes    # 批量
 | **M8** | [同行评审仿真](modules/m8-peer-review.md) | 多视角审稿模拟（领域/方法/专家/跨领域/DA）+ 编辑决策 + 修改路线图 | 评审 |
 | **M9** | [合规与伦理检查](modules/m9-compliance-check.md) | PRISMA-trAIce 17 项 + RAISE 五维度 + AI 披露 + 最终门控 | 合规 / 投稿 |
 
-> **v0.6 变更说明**（2026-05-06）：新增**三段式文献工作流**（广搜 → 筛选 → 收集）。`multi_source_search.py` 输出补充 `pdf_url`/`pdf_status`/`s2_paper_id`/`openalex_id` 四个字段（S2 fields 加 `openAccessPdf`，OpenAlex 走 `best_oa_location`，arXiv 走直链）。新增 `script/paper/manifest.py`（add / download / scan / render / prune / list 六个子命令）维护 `relate-work/manifest.jsonl` 作为 single source of truth；新增 `script/paper/collect_papers.sh` 三步合一封装。开放获取论文 PDF 自动下载到 `relate-work/pdf/<bibkey>.pdf`，闭源走 `missing.md` 引导用户手动补全。manifest 字段约定见 [`relate-work/MANIFEST_SCHEMA.md`](relate-work/MANIFEST_SCHEMA.md)。
+> **v0.6 变更说明**（2026-05-06）：新增**三段式文献工作流**（广搜 → 筛选 → 收集）。`multi_source_search.py` 输出补充 `pdf_url`/`pdf_status`/`s2_paper_id`/`openalex_id` 四个字段（S2 fields 加 `openAccessPdf`，OpenAlex 走 `best_oa_location`，arXiv 走直链）。新增 `script/paper/manifest.py`（add / download / scan / render / prune / list 六个子命令）维护 `relate-work/manifest.jsonl` 作为 single source of truth；新增 `script/paper/collect_papers.sh` 三步合一封装。开放获取论文 PDF 自动下载到 `relate-work/pdf/<bibkey>.pdf`，闭源走 `missing.md` 引导用户手动补全。manifest 字段约定见 [`docs/MANIFEST_SCHEMA.md`](docs/MANIFEST_SCHEMA.md)。
 >
 > **v0.5 变更说明**（2026-05-05）：新增 `paper_search.sh --mode multi`，整合 arXiv + Semantic Scholar + OpenAlex 三源并发检索 + BM25 重排（蒸馏自 papercircle-main 项目，~400 行 Python）。原 standard/bulk/crossref/verify 四模式保持不变。新增依赖：`rank-bm25` + `arxiv` + `requests`（见 `requirements.txt`，仅 multi 模式需要）。仅在 arxiv 命中、未被 S2/OpenAlex 交叉验证的预印本，`arxiv_status` 标为 `unknown`（而非 caution），因 arXiv API 不返回 `citationCount`。各源官方文档与限流参考见 [`config/README.md`](config/README.md) "外部 API 参考与限流" 表。
 >

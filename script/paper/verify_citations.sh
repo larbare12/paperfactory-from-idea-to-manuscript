@@ -14,9 +14,11 @@
 
 set -e
 
-# 初始化
+# 初始化（v0.6+：拆分 SKILL_DIR / PROJECT_DIR）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}}"
+PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
+PROJECT_ROOT="${PAPER_SKILL_DIR}"  # back-compat alias
 
 source "$SCRIPT_DIR/load_config.sh"
 
@@ -152,10 +154,11 @@ VERIFIED=$(grep -c '"VERIFIED"' "$TMPDIR/verdicts.ndjson" 2>/dev/null || echo "0
 FAILED=$((RESOLVED - VERIFIED))
 
 # ---- Step 4: 生成报告 (perl) ----
+# 报告写入论文项目目录（PROJECT_DIR），不是 skill 目录
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-REPORT_PATH="$PROJECT_ROOT/relate-work/citation_verification_report_${TIMESTAMP}.md"
+REPORT_PATH="$PAPER_PROJECT_DIR/relate-work/citation_verification_report_${TIMESTAMP}.md"
 
-mkdir -p "$PROJECT_ROOT/relate-work"
+mkdir -p "$PAPER_PROJECT_DIR/relate-work"
 
 NOW=$(date -Iseconds 2>/dev/null || date +"%Y-%m-%dT%H:%M:%S")
 

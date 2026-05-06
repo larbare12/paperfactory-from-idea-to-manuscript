@@ -426,8 +426,9 @@ def to_output_dict(p: Paper) -> dict:
 
 # ---------- Orchestration ----------
 
-def load_config(project_root: str) -> dict:
-    cfg_path = os.path.join(project_root, "config", "api.json")
+def load_config(skill_dir: str) -> dict:
+    """config/api.json is a skill asset (shared across projects)."""
+    cfg_path = os.path.join(skill_dir, "config", "api.json")
     if not os.path.exists(cfg_path):
         return {}
     with open(cfg_path, encoding="utf-8") as f:
@@ -490,9 +491,12 @@ def main():
     parser.add_argument("--no-rerank", action="store_true", help="Skip BM25 rerank")
     args = parser.parse_args()
 
-    project_root = os.environ.get("PAPER_SKILL_ROOT") or os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", ".."))
-    cfg = load_config(project_root)
+    # config/api.json is a SKILL asset (not a project artifact), so always
+    # resolve via SKILL_DIR. Output goes to stdout — caller decides where.
+    skill_dir = (os.environ.get("PAPER_SKILL_DIR")
+                 or os.environ.get("PAPER_SKILL_ROOT")  # back-compat
+                 or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+    cfg = load_config(skill_dir)
     sources = build_sources(cfg, args.sources.split(","))
     if not sources:
         print('{"error": "no valid sources configured"}', file=sys.stderr)

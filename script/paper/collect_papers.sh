@@ -12,8 +12,10 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
-export PAPER_SKILL_ROOT="$PROJECT_ROOT"
+PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}}"
+PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
+export PAPER_SKILL_DIR PAPER_PROJECT_DIR
+export PAPER_SKILL_ROOT="$PAPER_SKILL_DIR"  # back-compat alias for downstream scripts
 
 SEARCH=""
 BIBKEYS=""
@@ -65,7 +67,7 @@ echo "=== Stage 3.3: render ==="
 "${PYTHON_CMD[@]}" "$MANIFEST_PY" render
 
 echo
-echo "✅ Done. Review:"
-echo "  - 全表:        $PROJECT_ROOT/relate-work/manifest.md"
-echo "  - 待人工补全:   $PROJECT_ROOT/relate-work/missing.md"
+echo "✅ Done. Review (in your paper project at $PAPER_PROJECT_DIR):"
+echo "  - 全表:        relate-work/manifest.md"
+echo "  - 待人工补全:   relate-work/missing.md"
 echo "  - 用户补完后跑: ${PYTHON_CMD[*]} $MANIFEST_PY scan"
