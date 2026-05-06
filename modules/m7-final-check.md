@@ -1,5 +1,8 @@
 # M7 投稿前总检模块
 
+> **必读规范（进入本模块前必读）**：
+> - [literature-research-protocol.md](../reference/literature-research-protocol.md) — 反幻觉三层验证 + 红线清单（M7 入口前必跑 `verify_citations.sh`）
+
 > **理论基础**：
 > - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第3部分（写作流程规范）
 > - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 附录（投稿前检查清单）

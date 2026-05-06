@@ -1,5 +1,8 @@
 # M1 选题诊断模块
 
+> **必读规范（进入本模块前必读）**：
+> - [literature-research-protocol.md](../reference/literature-research-protocol.md) — 文献检索三段式工作流 + 反幻觉三层验证 + 红线清单 + 常见陷阱
+
 > **理论基础**：
 > - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第7.1节（论文大纲生成 Prompt）
 > - 基于 [Relic 论文](https://arxiv.org/abs/2604.16116) 八层提取法思想

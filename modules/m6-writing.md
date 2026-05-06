@@ -1,5 +1,8 @@
 # M6 写作辅助模块
 
+> **必读规范（进入本模块前必读）**：
+> - [literature-research-protocol.md](../reference/literature-research-protocol.md) — 文献检索三段式工作流 + 反幻觉三层验证 + 红线清单 + 常见陷阱
+
 > **理论基础**：
 > - 参见 [ACADEMIC-WRITING-GUIDE.md](../reference/writing/ACADEMIC-WRITING-GUIDE.md) 全文（数学符号、缩写、格式规范）
 > - 参见 [PAPER-WRITING-GUIDE.md](../reference/writing/PAPER-WRITING-GUIDE.md) 第2部分（用词与语言风格）
