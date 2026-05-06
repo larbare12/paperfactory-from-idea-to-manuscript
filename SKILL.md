@@ -300,8 +300,6 @@ py -3 script/paper/manifest.py prune --yes    # 批量
 > **v0.6 变更说明**（2026-05-06）：新增**三段式文献工作流**（广搜 → 筛选 → 收集）。`multi_source_search.py` 输出补充 `pdf_url`/`pdf_status`/`s2_paper_id`/`openalex_id` 四个字段（S2 fields 加 `openAccessPdf`，OpenAlex 走 `best_oa_location`，arXiv 走直链）。新增 `script/paper/manifest.py`（add / download / scan / render / prune / list 六个子命令）维护 `relate-work/manifest.jsonl` 作为 single source of truth；新增 `script/paper/collect_papers.sh` 三步合一封装。开放获取论文 PDF 自动下载到 `relate-work/pdf/<bibkey>.pdf`，闭源走 `missing.md` 引导用户手动补全。manifest 字段约定见 [`docs/MANIFEST_SCHEMA.md`](docs/MANIFEST_SCHEMA.md)。
 >
 > **v0.5 变更说明**（2026-05-05）：新增 `paper_search.sh --mode multi`，整合 arXiv + Semantic Scholar + OpenAlex 三源并发检索 + BM25 重排（蒸馏自 papercircle-main 项目，~400 行 Python）。原 standard/bulk/crossref/verify 四模式保持不变。新增依赖：`rank-bm25` + `arxiv` + `requests`（见 `requirements.txt`，仅 multi 模式需要）。仅在 arxiv 命中、未被 S2/OpenAlex 交叉验证的预印本，`arxiv_status` 标为 `unknown`（而非 caution），因 arXiv API 不返回 `citationCount`。各源官方文档与限流参考见 [`config/README.md`](config/README.md) "外部 API 参考与限流" 表。
->
-> **v0.4 变更说明**（2026-05-04）：新增三大硬约束（首段已展开）——(1) 初始化检查：API 凭据 + `config/` 目录 + git 工作区三项门控；(2) Git 版本控制全程强制：分支命名、commit 边界、禁止动作清单；(3) 反幻觉硬约束：三层验证（来源 → 引用 → 内容）+ 四条红线，强制在 M2/M6/M7 三个时点运行 `verify_citations.sh`。整合 ARS prompt 资产后修复 reference 链接（PR #9、#10）。
 
 ## 使用方式
 
