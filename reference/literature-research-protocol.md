@@ -132,8 +132,19 @@ py -3 script/paper/manifest.py prune --yes    # 批量
 
 ## 🪤 Part 3：常见陷阱（实战反思）
 
-以下是 Agent 默认行为容易过度执行的两点，使用三段式工作流前先确认：
+以下是 Agent 默认行为容易过度执行/省略的几点，使用三段式工作流前先确认：
 
 - **不要默认多轮检索。** 当用户的引用目标是聚焦的（≤ 5 篇、主题明确，例如"几篇能证明 X 的论文"、"补一篇 baseline"），单次 `paper_search.sh --mode multi --limit 25` 通常已经覆盖所有 strong matches。多跑 2-3 轮（不同关键词）会让 `search-*.jsonl` 在 relate-work/ 冗余堆积，最终选定的 bibkey 多半都来自第 1 轮。**默认 1 轮起步**，仅当第 1 轮命中显著不足或用户明示要做综述级广搜时再扩展。
 
 - **临时调试产物不要落到 relate-work/。** relate-work/ 是用户的论文产物目录，不是 Agent 的 scratch space。以下中间文件应写到系统临时路径（`$TMPDIR` / `mktemp -d`），用完即删：人工预览搜索结果的标题列表、Windows GBK 终端编码 workaround 的 UTF-8 dump、dry-run 输出。落到 relate-work/ 的产物应仅限脚本规定的正式输出（`manifest.*` / `search-<slug>-<date>.jsonl` / `citation_verification_report_*.md` / `pdf/`）。
+
+- 🚫 **Abstract-only cite 反模式（最严重的隐性幻觉源）。** 检索结果中的 abstract 通常只够支撑**框架性提及**（"... such as \cite{X}"），**绝不够**支撑 paraphrase 类陈述（"X 论文做了 Y / 复现了 Z / 验证了 W"）。abstract 会让你**无法分辨**：
+  - 论文用的是 LLM agent 还是 transformer foundation model（例：MarS 不是 LLM agent，是 order-level generative foundation model）
+  - 论文是否真的复现了你想引用的现象（例：SimFin abstract 说 "consistent with preliminary findings" 而不是 "reproduce price bubbles"）
+  - 论文研究的对象是什么（例：InvestAlign 研究 SFT 数据生成，不研究 willingness 系数）
+
+  **硬约束**：只要你打算 paraphrase "论文 X 做了什么/发现了什么/复现了什么"，**必须**：(1) `relate-work/pdf/<bibkey>.pdf` 已存在；(2) `manifest.jsonl` 中该 bibkey `status ∈ {downloaded, user-supplied}`；(3) 你**亲自**精读了相关章节（method/experiments/results），不是只看 abstract。如果以上任何一条不满足，必须先用 `[NEEDS-EVIDENCE]` 占位，**严禁直接 cite**。
+
+  **OA 优先策略**：Stage 3 的 `collect_papers.sh` 会自动尝试 arXiv → OpenAlex → S2 OA 下载，OA 命中率通常 60–90%。**对 OA 论文（status=downloaded），Agent 必须立即精读再 cite**——能下载没读、然后只看 abstract 写引用是双重失误。对闭源论文（status=missing），按 Stage 4 流程引导用户从机构订阅手动补全，**未补全前严禁 paraphrase**。
+
+- ⚠️ **`verify_citations.sh` 的 BibTeX parser 已知缺陷：嵌套 `{...}` 大写保护会截断 title。** 例如 `title = {{OASIS}: Open Agent Social ...}` 会被解析为 `{OASIS`，与 S2 真实 title 的 fuzzy match 失败，归类为 `DOI_MISMATCH / PAC`，但 DOI 实际能 resolve（"DOI resolves but title mismatch"）——这是**假阳性**，不是反幻觉失败。**判读规则**：报告显示 `DOI resolves` + `match_score < 0.7` + 该条目 .bib title 含嵌套 `{...}` 时，按照 known issue 处理；可临时建一份去掉大括号保护的 minimal .bib 重跑一次确认。修复 parser 是 paper.skill 的待办（issue 待提）。
