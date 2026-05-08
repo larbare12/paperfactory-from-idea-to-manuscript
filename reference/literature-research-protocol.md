@@ -148,3 +148,17 @@ py -3 script/paper/manifest.py prune --yes    # 批量
   **OA 优先策略**：Stage 3 的 `collect_papers.sh` 会自动尝试 arXiv → OpenAlex → S2 OA 下载，OA 命中率通常 60–90%。**对 OA 论文（status=downloaded），Agent 必须立即精读再 cite**——能下载没读、然后只看 abstract 写引用是双重失误。对闭源论文（status=missing），按 Stage 4 流程引导用户从机构订阅手动补全，**未补全前严禁 paraphrase**。
 
 - ⚠️ **`verify_citations.sh` 的 BibTeX parser 已知缺陷：嵌套 `{...}` 大写保护会截断 title。** 例如 `title = {{OASIS}: Open Agent Social ...}` 会被解析为 `{OASIS`，与 S2 真实 title 的 fuzzy match 失败，归类为 `DOI_MISMATCH / PAC`，但 DOI 实际能 resolve（"DOI resolves but title mismatch"）——这是**假阳性**，不是反幻觉失败。**判读规则**：报告显示 `DOI resolves` + `match_score < 0.7` + 该条目 .bib title 含嵌套 `{...}` 时，按照 known issue 处理；可临时建一份去掉大括号保护的 minimal .bib 重跑一次确认。修复 parser 是 paper.skill 的待办（issue 待提）。
+
+- 📊 **Venue quality 第二把尺：除了"是否真实"还要看"是否够顶"。** 反幻觉验证只能保证引用的论文存在；它不保证引用的论文**学术力度足够支撑你想做的论证**。Agent 在筛选阶段（Stage 2）必须用 venue quality 作为第二把尺，特别是当引用要被用作"方法论 baseline"或"公式来源"时。常见误区：
+  - 🚫 **预印本/工作论文当期刊用**：`NBER Working Paper` / `arXiv` / `SSRN` / `RePEc WP` 都**不是同行评审期刊**，它们是 preprint。NBER 是 National Bureau of Economic Research（机构名），它发布的 WP series 没有同行评审，许多后续会发到 JF/RFS/AER 等顶刊但**也有永远停在 WP 阶段的**。如果一篇文章的 venue 字段是 "National Bureau of Economic Research Working Paper Series" 或 "arXiv"，标记为预印本，并查 DOI/Semantic Scholar 看是否有期刊版本。
+  - 🚫 **会议 proceedings ≠ 顶会**：`Other Conferences` / `Online World Conference on...` / 大量水会的 proceedings 都不是 top venue，不能用作核心方法依据。Top AI/ML 会议白名单：AAAI / NeurIPS / ICML / ICLR / KDD / WWW / ACL / EMNLP / SIGIR / CVPR / ICCV / ECCV。
+  - 🚫 **同主题选最低 IF 的**：检索返回多篇同主题论文时不要按 citation 排序选第一篇——查 venue。OM/Production：FT50（Manufacturing & Service Operations Management、Operations Research、Management Science、J. Operations Management、Production and Operations Management）+ IJPR、IJPE、Annals of OR、Computers & Industrial Engineering 这些 OR/SCM 顶刊。Finance：FT50（JF / RFS / JFE / Journal of Financial and Quantitative Analysis）。
+
+  **硬约束**：当一篇文章被作为"我们要采用的方法 / 公式 / 范式来源"时（不只是背景文献），**Agent 必须报告 venue quality**：
+  1. 是否同行评审正式发表（不是 working paper / preprint）
+  2. 期刊在所属领域的 ranking（FT50? JCR Q1? 顶刊白名单内?）
+  3. 如果有同主题更顶刊的替代论文，先列出来让用户选
+
+  **判读规则**：venue 字段含 "Working Paper" / "arXiv" / "SSRN" / "preprint" / "WP" → preprint，方法论引用力弱，论文里只能用 "concurrent work" 或 "see also" 弱引用，**不能作为核心方法 baseline**。除非 1) 该论文已被引用 50+ 次且未发表说明顶刊拒稿不是质量问题、2) 找不到等价的已发表替代品。
+
+  **真实事故**：2026-05-08 我把 Lu et al. 2021 (NBER WP w29166) 当作"价格弹性公式 baseline"放进 SHOCK_FORMULA_PROPOSAL，作为论文核心方法依据。用户复审时挑出"NBER 不是期刊"，整个 Layer B 推倒重写——最终改用 Zhu et al. 2023 IJPR（IF≈9 OM 顶刊）的 piecewise demand profile 替代。代价是返工一个 layer 的设计。
