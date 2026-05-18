@@ -81,3 +81,64 @@ related:
 例如 `title = {{OASIS}: Open Agent Social ...}` 会被解析为 `{OASIS`,与 S2 真实 title 的 fuzzy match 失败,归类为 `DOI_MISMATCH / PAC`,但 DOI 实际能 resolve("DOI resolves but title mismatch")——这是**假阳性**,不是反幻觉失败。
 
 **判读规则**:报告显示 `DOI resolves` + `match_score < 0.7` + 该条目 .bib title 含嵌套 `{...}` 时,按照 known issue 处理;可临时建一份去掉大括号保护的 minimal .bib 重跑一次确认。修复 parser 是 paper-assistant 的待办(issue 待提)。
+
+---
+
+## 引用幻觉 5 类分类法
+
+> 源自 PaperOrchestra (Song et al., 2026) 的引用审计经验。autonomous 模式下 LLM 端到端生成引用时,必须对这 5 类做编程防御。Tier 0(`verify_citations.sh`)能捕获前 4 类的相当部分,第 5 类(SH)需 Tier 2+ 全文核验。
+
+| 缩写 | 中文 | 定义 | Tier 0 能否捕获 |
+|---|---|---|---|
+| **TF** | Total Fabrication 完全捏造 | 标题/作者/venue/DOI 全部虚构,论文根本不存在 | ✅ S2 search 返回 0 条 Lev ≥ 0.70 → `S2_NOT_FOUND` |
+| **PAC** | Partial Author Confusion 作者错配 | 论文真实,但作者归属错(同名学者 / 不同领域) | ⚠️ DOI 解析得到但 Levenshtein < 0.70 → `DOI_MISMATCH`,标记为 PAC 疑似 |
+| **IH** | Imaginary Hosting 虚假 venue | 论文存在,但 venue(会议/期刊)是编造的——如把 arXiv 预印本说成发表在 "NeurIPS 2024" | ❌ 目前 venue 比对未自动化(TODO),需人工对照 S2 返回的 venue 字段 |
+| **PH** | Partial Homonym 同名作者错引 | "Wei Wang" 类 namespace 冲突——LLM 引用了错误的同名学者的论文 | ❌ S2 返回 authorId 可比对,但白名单未实现(TODO) |
+| **SH** | Secondhand 二手引用错传 | A 引用了 B,LLM 把 B 的结论错误归给 A;或读了 A 的 abstract 把别人的话当成 A 自己说的 | 🚫 **Tier 0 无能为力**——论文真、metadata 真、就是内容归属错。需 M6 `[NEEDS-EVIDENCE]` + `find_evidence.sh` Tier 2+ 全文核验 |
+
+**与"abstract-only cite 反模式"的关系**:SH 类幻觉的最常见成因就是 abstract-only cite——LLM 读了摘要,把摘要里"引述其他工作"的内容当成本论文的结论。这就是为什么"只看 abstract 写 paraphrase"被列为最严重的隐性幻觉源。
+
+---
+
+## Tier 0 校验协议(verify mode 实现细节)
+
+### 触发时点
+
+- **强制**:M6 终稿生成后必须运行 `verify_citations.sh`
+- **门控**:Tier 0 报告中除 `S2_UNAVAILABLE` 外 0 条失败,才允许进入 M7
+- **审计**:NDJSON verdict 写入 `relate-work/citation_verification_report_<timestamp>.md`
+
+### 三层兜底架构(当前仅 Tier 0 自动化)
+
+```
+Tier 0 (编程校验):  S2 /paper/search + DOI 反查
+                      └── PASS                   → 通过
+                      └── S2_NOT_FOUND           → 降级 Tier 1
+                      └── S2_UNAVAILABLE         → 降级 Tier 1
+                      └── DOI_MISMATCH (Lev<0.7) → 标 PAC 疑似,人工复核
+Tier 1 (手工 fallback): doi.org 直接解析
+                      └── 200  → 记录元数据
+                      └── 404  → 降级 Tier 2
+Tier 2 (手工 fallback): WebSearch 抽样 Google/Bing
+                      └── 仍无 → 标 TF 疑似
+```
+
+### Levenshtein 阈值 0.70 的来源
+
+源自 PaperOrchestra (Song et al., 2026) 附录 D.3 的 Citation Verification 实验。在 68 条真实发表的引用上验证,该阈值能有效区分真引用与 TF/PAC 类幻觉。本 plugin 直接沿用。
+
+### 实现位置
+
+- 引擎:`skills/citation-search/scripts/paper_search.sh --mode verify`
+- 批扫:`skills/citation-search/scripts/verify_citations.sh`(扫 .tex 提取 `\cite{...}` → 批量校验 → 出报告)
+- 全文级 SH 防御:`skills/citation-search/scripts/find_evidence.sh`(M5 论证用)
+
+### 已知限制
+
+| 限制 | 缓解方式 |
+|---|---|
+| SH 类幻觉无法自动检测 | M6 `[NEEDS-EVIDENCE]` + `find_evidence.sh` |
+| Venue 模糊比对未自动化 | TODO,verify mode 后续加入 |
+| 同名作者(PH)消歧未自动化 | TODO,加入领域作者白名单 |
+| 中文/灰色文献可能不在 S2 | `S2_NOT_FOUND` 不直接判定为幻觉,降级 Tier 1+2 人工 |
+| BibTeX parser 嵌套大括号 bug | 见上节 known issue,临时去括号重跑 |
