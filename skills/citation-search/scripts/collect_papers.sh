@@ -1,7 +1,7 @@
 #!/bin/bash
 # Stage 3 一键收集：add → download → render
 # 用法:
-#   bash script/paper/collect_papers.sh \
+#   bash skills/citation-search/scripts/collect_papers.sh \
 #       --search relate-work/search-X.jsonl \
 #       --bibkeys vaswani-2017-attention,kipf-2017-semi
 #
@@ -12,7 +12,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}}"
+PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}}"
 PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
 export PAPER_SKILL_DIR PAPER_PROJECT_DIR
 export PAPER_SKILL_ROOT="$PAPER_SKILL_DIR"  # back-compat alias for downstream scripts

@@ -22,7 +22,7 @@
 
 # 初始化
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}}"
+PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}}"
 PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
 PROJECT_ROOT="${PAPER_SKILL_DIR}"  # back-compat alias for load_config.sh
 RELATE_DIR="$PAPER_PROJECT_DIR/relate-work"
@@ -58,7 +58,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$CLAIM" ]]; then
-    echo '{"error": "Usage: bash script/paper/find_evidence.sh \"<claim>\" [--topic STR] [--limit N] [--year-from YYYY] [--output FILE]"}' >&2
+    echo '{"error": "Usage: bash skills/citation-search/scripts/find_evidence.sh \"<claim>\" [--topic STR] [--limit N] [--year-from YYYY] [--output FILE]"}' >&2
     exit 1
 fi
 

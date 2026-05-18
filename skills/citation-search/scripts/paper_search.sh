@@ -1,13 +1,13 @@
 #!/bin/bash
 # 论文搜索（合并 s2_search + s2_bulk_search + crossref_search + multi-source）
 # 用法:
-#   bash script/paper/paper_search.sh "query" [--mode standard|bulk|crossref|multi|verify] [--year 2020-] [--limit N]
-#   bash script/paper/paper_search.sh --mode verify --input <(echo '{"title":"...","doi":"..."}')
+#   bash skills/citation-search/scripts/paper_search.sh "query" [--mode standard|bulk|crossref|multi|verify] [--year 2020-] [--limit N]
+#   bash skills/citation-search/scripts/paper_search.sh --mode verify --input <(echo '{"title":"...","doi":"..."}')
 # 示例:
-#   bash script/paper/paper_search.sh "deep learning"                              # 默认 standard，limit=20
-#   bash script/paper/paper_search.sh "deep learning" --mode bulk --year 2020- --limit 50
-#   bash script/paper/paper_search.sh "deep learning" --mode crossref --limit 20
-#   bash script/paper/paper_search.sh "deep learning" --mode multi --limit 30      # arXiv + S2 + OpenAlex 并发 + BM25
+#   bash skills/citation-search/scripts/paper_search.sh "deep learning"                              # 默认 standard，limit=20
+#   bash skills/citation-search/scripts/paper_search.sh "deep learning" --mode bulk --year 2020- --limit 50
+#   bash skills/citation-search/scripts/paper_search.sh "deep learning" --mode crossref --limit 20
+#   bash skills/citation-search/scripts/paper_search.sh "deep learning" --mode multi --limit 30      # arXiv + S2 + OpenAlex 并发 + BM25
 #
 # 五种模式语义不同，不要混淆:
 #   standard : Semantic Scholar /paper/search    （相关性排序，limit ≤ 100）
@@ -20,7 +20,7 @@ set -e
 
 # 初始化（v0.6+：拆分 SKILL_DIR / PROJECT_DIR）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}}"
+PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}}"
 PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
 PROJECT_ROOT="${PAPER_SKILL_DIR}"  # back-compat alias used by helpers below
 

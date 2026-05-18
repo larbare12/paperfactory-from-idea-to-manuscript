@@ -1,6 +1,6 @@
 #!/bin/bash
 # 配置加载函数 - 被其他脚本 source 调用
-# 用法: source script/paper/load_config.sh
+# 用法: source skills/citation-search/scripts/load_config.sh
 
 # 解析 SKILL_DIR（v0.6+：与 PROJECT_DIR 区分）
 if [[ -n "${PAPER_SKILL_DIR:-}" ]]; then
@@ -11,7 +11,7 @@ elif [[ -n "${CLAUDE_SKILL_ROOT:-}" ]]; then
     PAPER_SKILL_DIR="${CLAUDE_SKILL_ROOT}"
 else
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    PAPER_SKILL_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+    PAPER_SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 fi
 PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
 

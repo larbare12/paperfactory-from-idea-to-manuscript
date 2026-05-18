@@ -1,19 +1,19 @@
 #!/bin/bash
 # 期刊/会议信息查询（合并 ccf_lookup + if_lookup + venue_info）
 # 用法:
-#   bash script/paper/venue_lookup.sh "venue_name" [--mode ccf|if|all]
+#   bash skills/citation-search/scripts/venue_lookup.sh "venue_name" [--mode ccf|if|all]
 # 示例:
-#   bash script/paper/venue_lookup.sh "TMI"                    # 默认 all：CCF + IF
-#   bash script/paper/venue_lookup.sh "Nature Medicine" --mode if
-#   bash script/paper/venue_lookup.sh "TMI" --mode ccf
+#   bash skills/citation-search/scripts/venue_lookup.sh "TMI"                    # 默认 all：CCF + IF
+#   bash skills/citation-search/scripts/venue_lookup.sh "Nature Medicine" --mode if
+#   bash skills/citation-search/scripts/venue_lookup.sh "TMI" --mode ccf
 # 返回: JSON 格式
 
 set -e
 
-# 初始化（脚本位置: <PROJECT_ROOT>/script/paper/，sqlite 位于 <PROJECT_ROOT>/reference/）
+# 初始化（脚本位置: <PROJECT_ROOT>/scripts/，sqlite 位于 <PROJECT_ROOT>/data/）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
-DATA_DIR="$PROJECT_ROOT/reference"
+PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+DATA_DIR="$PROJECT_ROOT/data"
 
 # 解析参数
 NAME=""
@@ -38,7 +38,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$NAME" ]]; then
-    echo '{"error": "Usage: bash script/paper/venue_lookup.sh \"venue_name\" [--mode ccf|if|all]"}' >&2
+    echo '{"error": "Usage: bash skills/citation-search/scripts/venue_lookup.sh \"venue_name\" [--mode ccf|if|all]"}' >&2
     exit 1
 fi
 

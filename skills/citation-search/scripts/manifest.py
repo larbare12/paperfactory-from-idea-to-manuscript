@@ -37,7 +37,7 @@ for _stream in (sys.stdout, sys.stderr):
 # Default PROJECT_DIR = cwd, so cd-ing into your paper project Just Works.
 SKILL_DIR = (os.environ.get("PAPER_SKILL_DIR")
              or os.environ.get("PAPER_SKILL_ROOT")  # back-compat alias
-             or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+             or os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 PROJECT_DIR = os.environ.get("PAPER_PROJECT_DIR") or os.getcwd()
 RELATE_WORK = os.path.join(PROJECT_DIR, "relate-work")
 PDF_DIR = os.path.join(RELATE_WORK, "pdf")

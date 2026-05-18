@@ -495,7 +495,7 @@ def main():
     # resolve via SKILL_DIR. Output goes to stdout — caller decides where.
     skill_dir = (os.environ.get("PAPER_SKILL_DIR")
                  or os.environ.get("PAPER_SKILL_ROOT")  # back-compat
-                 or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+                 or os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     cfg = load_config(skill_dir)
     sources = build_sources(cfg, args.sources.split(","))
     if not sources:

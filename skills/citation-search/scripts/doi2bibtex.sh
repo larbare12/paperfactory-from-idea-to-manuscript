@@ -1,14 +1,14 @@
 #!/bin/bash
 # DOI 转 BibTeX
-# 用法: bash script/paper/doi2bibtex.sh "doi"
-# 示例: bash script/paper/doi2bibtex.sh "10.1038/nature12373"
+# 用法: bash skills/citation-search/scripts/doi2bibtex.sh "doi"
+# 示例: bash skills/citation-search/scripts/doi2bibtex.sh "10.1038/nature12373"
 # 返回: BibTeX 格式的引用
 
 set -e
 
-# 初始化（脚本位置: <PROJECT_ROOT>/script/paper/）
+# 初始化（脚本位置: <PROJECT_ROOT>/skills/citation-search/scripts/）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 
 # 加载配置
 source "$SCRIPT_DIR/load_config.sh"
@@ -17,7 +17,7 @@ source "$SCRIPT_DIR/load_config.sh"
 DOI="${1:-}"
 
 if [[ -z "$DOI" ]]; then
-    echo '{"error": "Usage: bash script/paper/doi2bibtex.sh \"doi\""}' >&2
+    echo '{"error": "Usage: bash skills/citation-search/scripts/doi2bibtex.sh \"doi\""}' >&2
     exit 1
 fi
 

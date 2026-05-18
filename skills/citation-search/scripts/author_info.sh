@@ -1,14 +1,14 @@
 #!/bin/bash
 # 作者信息查询（H-index、引用量、论文数）
-# 用法: bash script/paper/author_info.sh "author_id"
-# 示例: bash script/paper/author_info.sh "1699545"
+# 用法: bash skills/citation-search/scripts/author_info.sh "author_id"
+# 示例: bash skills/citation-search/scripts/author_info.sh "1699545"
 # 返回: JSON 格式的作者信息
 
 set -e
 
-# 初始化（脚本位置: <PROJECT_ROOT>/script/paper/）
+# 初始化（脚本位置: <PROJECT_ROOT>/skills/citation-search/scripts/）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 
 # 加载配置
 source "$SCRIPT_DIR/load_config.sh"
@@ -17,7 +17,7 @@ source "$SCRIPT_DIR/load_config.sh"
 AUTHOR_ID="${1:-}"
 
 if [[ -z "$AUTHOR_ID" ]]; then
-    echo '{"error": "Usage: bash script/paper/author_info.sh \"author_id\""}' >&2
+    echo '{"error": "Usage: bash skills/citation-search/scripts/author_info.sh \"author_id\""}' >&2
     exit 1
 fi
 

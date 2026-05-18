@@ -1,7 +1,7 @@
 #!/bin/bash
 # 论文引用验证包装器
 # 用法:
-#   bash script/paper/verify_citations.sh <draft.md|draft.tex> [--bib <file.bib>]
+#   bash skills/citation-search/scripts/verify_citations.sh <draft.md|draft.tex> [--bib <file.bib>]
 #
 # 功能:
 #   1. 从草稿文件中提取引用 key（LaTeX \cite{} 或 Markdown @key）
@@ -10,13 +10,13 @@
 #   4. 生成分类报告到 relate-work/citation_verification_report_<timestamp>.md
 #
 # 示例:
-#   bash script/paper/verify_citations.sh relate-work/draft.tex --bib relate-work/references.bib
+#   bash skills/citation-search/scripts/verify_citations.sh relate-work/draft.tex --bib relate-work/references.bib
 
 set -e
 
 # 初始化（v0.6+：拆分 SKILL_DIR / PROJECT_DIR）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}}"
+PAPER_SKILL_DIR="${PAPER_SKILL_DIR:-${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}}"
 PAPER_PROJECT_DIR="${PAPER_PROJECT_DIR:-$PWD}"
 PROJECT_ROOT="${PAPER_SKILL_DIR}"  # back-compat alias
 

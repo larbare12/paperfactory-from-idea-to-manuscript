@@ -1,11 +1,11 @@
 #!/bin/bash
 # 配置验证脚本 - 检查所有配置是否正确加载
-# 用法: bash script/paper/verify_config.sh
+# 用法: bash skills/citation-search/scripts/verify_config.sh
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+PROJECT_ROOT="${PAPER_SKILL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 
 echo "📋 配置验证检查"
 echo "==============================================="
@@ -112,6 +112,6 @@ echo "==============================================="
 echo "✅ 所有检查通过！配置已准备就绪。"
 echo ""
 echo "可以运行以下命令测试："
-echo "  bash script/paper/author_info.sh \"1699545\""
-echo "  bash script/paper/paper_search.sh \"deep learning\""
+echo "  bash skills/citation-search/scripts/author_info.sh \"1699545\""
+echo "  bash skills/citation-search/scripts/paper_search.sh \"deep learning\""
 echo ""
