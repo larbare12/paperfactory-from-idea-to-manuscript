@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作者写给使用者的话 — paperfactory</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #18181b;
+    --muted: #71717a;
+    --border: #e4e4e7;
+    --accent: #7c3aed;
+    --accent-soft: #ede9fe;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a0a0a;
+      --fg: #fafafa;
+      --muted: #a1a1aa;
+      --border: #27272a;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 2;
+    font-size: 16px;
+    padding: 2rem 1.5rem;
+  }
+  .letter {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 3rem 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--bg);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  @media (max-width: 600px) {
+    .letter { padding: 2rem 1.25rem; }
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+  }
+  .subtitle {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin: 0 0 2rem;
+  }
+
+  p { margin: 0 0 1.2rem; }
+  p.indent { text-indent: 2em; }
+
+  .highlight {
+    text-align: center;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 2rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .feature-list {
+    margin: 1.5rem 0;
+    padding: 0;
+    list-style: none;
+  }
+  .feature-list li {
+    margin-bottom: 1rem;
+    padding-left: 1.2rem;
+    border-left: 2px solid var(--accent-soft);
+  }
+  .feature-list li .tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px dashed var(--border);
+    margin: 2rem 0;
+  }
+
+  .closing {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin: 2rem 0 0;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="letter">
+
+<h1>paperfactory: from idea to manuscript</h1>
+<p class="subtitle">作者写给使用者的话</p>
+
+<p class="indent">
+  研二还没发小论文？我写了个开源工具，把整条论文生产线自动化了。
+</p>
+
+<p class="indent">
+  故事从研二上学期开始说起。导师每周催一次进度，我打开 Overleaf，脑子一片空白，根本不知道从哪开始。
+</p>
+
+<p class="indent">
+  一直到 OpenClaw 的问世。那时我只是用它来辅助完成我的小论文。直到四月，一个想法在我的脑子里炸开 —— 既然现在的 Agent 这么强，可以自己写代码、自己写论文，为什么不直接让它自己干？
+</p>
+
+<p class="indent">
+  后来我花了两个月，把这些问题一个个拆开，写了个 Claude Code 插件叫 paperfactory。设计的初衷很简单：
+</p>
+
+<p class="highlight">你付出 idea，Agent 帮你实现。</p>
+
+<p style="font-weight:700; margin-top: 2rem;">具体能干嘛</p>
+
+<ul class="feature-list">
+  <li>
+    <span class="tag">M1</span> <strong>选题诊断</strong> —— 放进一个 idea，它帮你做可行性评估。研究 gap 存不存在？方法适不适合？跟已有文献撞不撞车？
+  </li>
+  <li>
+    <span class="tag">M2</span> <strong>文献检索 + 反幻觉</strong> —— 这个是最狠的。它不只帮你搜论文，还会逐条做 DOI 反查。模型编造出来的假引用、把 arXiv 预印本当顶刊引用，统统给你揪出来。这功能是我自己吃过大亏之后硬加上的 —— 一篇 NBER working paper 被错当成顶刊方法论 baseline，整层逻辑推倒重写。
+  </li>
+  <li>
+    <span class="tag">M3</span> <strong>实验设计</strong> —— 根据你的研究类型，推荐实验范式、样本量估算、对照组设计。
+  </li>
+  <li>
+    <span class="tag">M4</span> <strong>IMRAD 结构化</strong> —— 自动出大纲，Introduction / Methods / Results / Discussion 骨架一套生成。
+  </li>
+  <li>
+    <span class="tag">M5</span> <strong>论证红队</strong> —— AI 自己扮演审稿人，对你的每个核心论点做三轮攻击：Attack / Rebuttal / Concession。反驳力不够 4 分的论点，建议软化或降级。
+  </li>
+  <li>
+    <span class="tag">M6</span> <strong>写作辅助 + 证据铁律</strong> —— 所有数据点必须有本地证据支撑。缺证据的地方自动插 <code>[MATERIAL GAP]</code> 标记，没填完不准出终稿。
+  </li>
+  <li>
+    <span class="tag">M7</span> <strong>投稿前总检</strong> —— 引用完整性、格式规范、数据可复现性，一条龙审计。
+  </li>
+  <li>
+    <span class="tag">M8</span> <strong>审稿仿真</strong> —— 模拟 3 个审稿人视角，提前给你一份 review report。
+  </li>
+  <li>
+    <span class="tag">M9</span> <strong>合规检查</strong> —— AI 披露声明、伦理审查、PRISMA-trAIce 协议等。
+  </li>
+</ul>
+
+<p class="indent">
+  说白了，9 个环节，从「我有个 idea」到「可以投了」，一步一步带着你走。
+</p>
+
+<p class="indent">
+  免费。开源。一行命令快速安装。
+</p>
+
+<p class="indent">
+  作者有一个朴素的愿望：希望天底下的研究生，能够免去科研小论文的苦恼。
+</p>
+
+<hr>
+
+<p style="color: var(--muted); font-size: 0.92rem;">
+  如果你用完之后有改进想法，欢迎在评论区或者 GitHub 上反馈，甚至提交你的改动。
+</p>
+
+<p style="color: var(--muted); font-size: 0.92rem;">
+  作者最近在找暑期实习和忙论文，空闲的时候会慢慢看！
+</p>
+
+<p>
+  GitHub: <a href="https://github.com/larbare12/paperfactory-from-idea-to-manuscript" target="_blank">paperfactory-from-idea-to-manuscript</a>
+</p>
+
+<p class="closing">祝论文顺利。研究生不骗研究生。</p>
+
+</div>
+
+</body>
+</html>
