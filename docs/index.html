@@ -416,12 +416,17 @@
 
   <section id="quick-start">
     <h2>快速开始</h2>
-    <p class="section-intro">三步上手,从安装到第一次跑 M0 dashboard。</p>
+    <p class="section-intro">一行命令安装，三步上手。</p>
 
     <ol class="steps">
       <li>
         <h4>安装 plugin</h4>
-        <p>把整个 plugin 目录放到 Claude Code 的 plugin 路径(参见 Claude Code 文档),或在本目录直接启动 Claude Code session。</p>
+        <p><strong>一行命令：</strong></p>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/larbare12/paperfactory/master/install.sh | bash</code></pre>
+        <p>自动克隆到 <code>~/.claude/plugins/paperfactory/</code>。</p>
+        <p><strong>脚本失败时手动安装：</strong></p>
+<pre><code>mkdir -p ~/.claude/plugins
+git clone https://github.com/larbare12/paperfactory.git ~/.claude/plugins/paperfactory</code></pre>
       </li>
       <li>
         <h4>在论文项目里跑 init</h4>

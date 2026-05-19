@@ -37,7 +37,24 @@ Grad students worldwide suffer through the paper grind. **paperfactory** automat
 
 ### 1. Install
 
-Place the plugin directory into your Claude Code plugin path (see Claude Code docs), or launch a Claude Code session directly from this directory.
+**Option A: One-liner**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/larbare12/paperfactory/master/install.sh | bash
+```
+
+This clones paperfactory into `~/.claude/plugins/paperfactory/`. If it already exists, it runs `git pull` to update.
+
+**Option B: Manual install (if the script fails)**
+
+```bash
+# 1. Clone into Claude Code's plugin directory
+mkdir -p ~/.claude/plugins
+git clone https://github.com/larbare12/paperfactory.git ~/.claude/plugins/paperfactory
+
+# 2. Verify the plugin is recognized (if /paperfactory:init works, you're good)
+claude --version
+```
 
 ### 2. Run inside your paper project
 
@@ -60,6 +77,8 @@ This will automatically:
 4. Enable hooks (SessionStart / PreToolUse / PostToolUse / Stop)
 5. Run the M0 dashboard first scan
 6. Suggest next steps
+
+> You'll need an S2 API key: [semanticscholar.org/product/api](https://www.semanticscholar.org/product/api)
 
 ### 3. Follow the M0–M9 workflow
 

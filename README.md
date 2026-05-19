@@ -35,9 +35,26 @@ M0 仪表盘 · M1–M9 九阶段模块 · citation-search 独立子 skill<br>
 
 ## 快速开始
 
-### 1. 安装
+### 1. 安装 plugin
 
-把整个 plugin 目录放到 Claude Code 的 plugin 路径(参见 Claude Code 文档),或在本目录直接启动 Claude Code session。
+**方式一：一行命令安装**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/larbare12/paperfactory/master/install.sh | bash
+```
+
+自动克隆到 `~/.claude/plugins/paperfactory/`，已有则执行 `git pull` 更新。
+
+**方式二：手动安装（脚本失败时）**
+
+```bash
+# 1. 克隆到 Claude Code 的 plugin 目录
+mkdir -p ~/.claude/plugins
+git clone https://github.com/larbare12/paperfactory.git ~/.claude/plugins/paperfactory
+
+# 2. 验证 plugin 被识别（启动 claude 后，/paperfactory:init 可用即为成功）
+claude --version
+```
 
 ### 2. 在你的论文项目里跑
 
@@ -60,6 +77,8 @@ claude  # 启动 session
 4. 启用 hooks(SessionStart / PreToolUse / PostToolUse / Stop)
 5. 跑 M0 仪表盘首次扫描
 6. 给出下一步建议
+
+> 需要 S2 API key: [semanticscholar.org/product/api](https://www.semanticscholar.org/product/api)
 
 ### 3. 按 M0–M9 工作流推进
 
