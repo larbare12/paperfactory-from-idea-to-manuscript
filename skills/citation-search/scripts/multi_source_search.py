@@ -100,7 +100,7 @@ class ArxivSource(PaperSource):
         # Provide a contact UA so we land in the "polite" handling bucket
         # (arxiv has no formal polite-pool but treats friendly UAs less harshly).
         mailto = os.environ.get("PAPER_SKILL_MAILTO", "")
-        ua = f"paper.skill/0.5 ({'mailto:' + mailto if mailto else 'github.com/larbare12/paper.skill'})"
+        ua = f"paperfactory/0.1 ({'mailto:' + mailto if mailto else 'github.com/larbare12/paperfactory-from-idea-to-manuscript'})"
         client = arxiv.Client(page_size=min(limit, 100), delay_seconds=3, num_retries=3)
         # arxiv >= 2.1 exposes the underlying Session for header customization
         try:

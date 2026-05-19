@@ -214,7 +214,7 @@ def cmd_add(args: argparse.Namespace) -> int:
 
 def _polite_ua() -> str:
     mailto = os.environ.get("PAPER_SKILL_MAILTO", "")
-    return f"paper.skill/0.6 ({'mailto:' + mailto if mailto else 'github.com/larbare12/paper.skill'})"
+    return f"paperfactory/0.1 ({'mailto:' + mailto if mailto else 'github.com/larbare12/paperfactory-from-idea-to-manuscript'})"
 
 
 def _candidate_urls(entry: dict) -> list[tuple[str, str]]:

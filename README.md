@@ -20,7 +20,7 @@ M0 仪表盘 · M1–M9 九阶段模块 · citation-search 独立子 skill<br>
   <a href="#架构">架构</a> ·
   <a href="#核心特性">核心特性</a> ·
   <a href="docs/README_EN.md">English</a> ·
-  <a href="docs/index.html">网页版文档</a>
+  <a href="https://larbare12.github.io/paperfactory-from-idea-to-manuscript/">网页版文档</a>
 </sub>
 
 </div>
@@ -50,7 +50,7 @@ curl -fsSL https://raw.githubusercontent.com/larbare12/paperfactory/master/insta
 ```bash
 # 1. 克隆到 Claude Code 的 plugin 目录
 mkdir -p ~/.claude/plugins
-git clone https://github.com/larbare12/paperfactory.git ~/.claude/plugins/paperfactory
+git clone https://github.com/larbare12/paperfactory-from-idea-to-manuscript.git ~/.claude/plugins/paperfactory
 
 # 2. 验证 plugin 被识别（启动 claude 后，/paperfactory:init 可用即为成功）
 claude --version

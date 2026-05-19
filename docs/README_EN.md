@@ -20,7 +20,7 @@ structure planning · argumentation · writing assistance · pre-submission audi
   <a href="#architecture">Architecture</a> ·
   <a href="#features">Features</a> ·
   <a href="../README.md">中文文档</a> ·
-  <a href="index.html">Web Docs</a>
+  <a href="https://larbare12.github.io/paperfactory-from-idea-to-manuscript/">Web Docs</a>
 </sub>
 
 </div>
@@ -50,7 +50,7 @@ This clones paperfactory into `~/.claude/plugins/paperfactory/`. If it already e
 ```bash
 # 1. Clone into Claude Code's plugin directory
 mkdir -p ~/.claude/plugins
-git clone https://github.com/larbare12/paperfactory.git ~/.claude/plugins/paperfactory
+git clone https://github.com/larbare12/paperfactory-from-idea-to-manuscript.git ~/.claude/plugins/paperfactory
 
 # 2. Verify the plugin is recognized (if /paperfactory:init works, you're good)
 claude --version

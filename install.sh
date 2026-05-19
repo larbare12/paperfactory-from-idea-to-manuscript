@@ -10,7 +10,7 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-REPO="https://github.com/larbare12/paperfactory.git"
+REPO="https://github.com/larbare12/paperfactory-from-idea-to-manuscript.git"
 INSTALL_DIR="${HOME}/.claude/plugins/paperfactory"
 
 echo ""

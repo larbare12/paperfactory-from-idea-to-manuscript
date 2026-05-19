@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/larbare12/paper.skill/schemas/passport.json",
+  "$id": "https://github.com/larbare12/paperfactory-from-idea-to-manuscript/schemas/passport.json",
   "title": "Material Passport",
-  "description": "Cross-stage state handoff object for paper.skill autonomous mode. Carries research metadata between M0–M7 modules so sessions can resume after context resets. Simplified from ARS Schema 9 — focused on fields the autonomous workflow actually needs.",
+  "description": "Cross-stage state handoff object for paperfactory autonomous mode. Carries research metadata between M0–M7 modules so sessions can resume after context resets. Simplified from ARS Schema 9 — focused on fields the autonomous workflow actually needs.",
   "type": "object",
   "properties": {
     "passport_id": {

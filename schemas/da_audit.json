@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/larbare12/paper.skill/schemas/da_audit.json",
+  "$id": "https://github.com/larbare12/paperfactory-from-idea-to-manuscript/schemas/da_audit.json",
   "title": "Devil's Advocate Audit Record",
   "description": "Per-claim DA exchange record. One instance per core claim per draft revision. Validates the anti-cascade-concession protocol output.",
   "type": "object",
