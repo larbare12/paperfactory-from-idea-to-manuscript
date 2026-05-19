@@ -1,0 +1,178 @@
+---
+name: m4-structure
+description: |
+  M4 结构规划——生成 IMRAD 大纲、章节边界、篇幅分配、写作顺序。**只管
+  骨架,不管论证逻辑**(论证主线归 m5-argument)。消费 M3 实验结果概要
+  和 M1 选题定位,产出 outline 写入 passport,供 M5/M6 按章节展开。
+  任何"实验完成后规划论文框架""转投不同期刊调整篇幅""IMRAD 结构
+  设计"场景调用本 skill。
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+---
+
+# M4 结构规划
+
+> **流程位置**:M1 → M2 → M3 → **[M4 结构(本模块)]** → M5 论证 → M6 写作 → M7 总检
+>
+> **为什么排在实验之后?** 实验结果决定了哪些章节有内容、哪些章节是核心。先做完实验再分配篇幅,避免空骨架。
+
+> **范围说明**:本模块**只管骨架,不管论证逻辑**。论证主线、章节间的论点呼应、反驳预判等都归 [m5-argument](../m5-argument/SKILL.md)。这条边界在旧版本是混的(M2 里塞了 4 个 sub-module 做论证),现在分开。
+
+## 输入
+
+- 选题(M1)
+- M3 实验结果概要
+- 预期贡献(理论/方法/实证)
+- 目标期刊/会议
+- 字数/页数限制
+
+## 输出
+
+- 完整大纲(章节 + 子章节 + 字数分配)
+- 各章节的内容边界(写什么 / 不写什么)
+- 写作顺序建议
+
+## 使用场景
+
+1. 实验完成后,规划论文框架
+2. 写作过程中,调整结构
+3. 转投不同期刊,调整篇幅
+
+---
+
+## 规划步骤(4 步)
+
+### Step 1:论文类型定位
+
+理论型 / 方法型 / 实证型 / 综述型 → 决定篇幅模板(见下表)。
+
+### Step 2:选定骨架
+
+按下方模板生成章节列表。**参照** [`reference/writing/paper_structure_patterns.md`](../../reference/writing/paper_structure_patterns.md) 根据论文特征从 6 种结构模型中选择——IMRaD(方法/实证型)、主题文献综述、理论分析、案例研究、政策简报、会议论文——每种模型有完整的章节大纲和篇幅配比参考。
+
+### Step 3:篇幅分配
+
+按论文类型配比,给每章节分配字数/页数。
+
+### Step 4:章节边界声明
+
+每章节明确**写什么 + 不写什么**(拒绝模式),避免章节间内容串台。
+
+---
+
+## IMRAD 标准结构模板
+
+```
+├── Abstract (200-300 字)
+│   └── 背景→问题→方法→结果→意义
+│
+├── Introduction (15-20%)
+│   ├── 研究背景
+│   ├── 问题陈述
+│   ├── 研究目标
+│   └── 贡献概述
+│
+├── Related Work (15-20%)
+│   ├── 领域概述
+│   ├── 现有方法分类
+│   └── 本文与已有工作的区别
+│
+├── Methodology (25-30%)
+│   ├── 问题定义
+│   ├── 算法/模型描述
+│   ├── 实现细节
+│   └── 复杂度分析
+│
+├── Experiments (20-25%)
+│   ├── 数据集描述
+│   ├── 评估指标
+│   ├── 对比方法
+│   └── 实验设置
+│
+├── Results (10-15%)
+│   ├── 主要结果
+│   ├── 消融实验
+│   └── 误差分析
+│
+├── Discussion (5-10%)
+│   ├── 结果解释
+│   ├── 局限性
+│   └── 启示
+│
+└── Conclusion (5%)
+    ├── 主要发现
+    ├── 理论/实践意义
+    └── 未来工作
+```
+
+---
+
+## 篇幅分配参考
+
+| 论文类型 | Intro | Related Work | Method | Experiments | Results | Discussion | Conclusion |
+|---|---|---|---|---|---|---|---|
+| 理论型 | 20% | 25% | 30% | 10% | 5% | 5% | 5% |
+| 方法型 | 15% | 15% | 35% | 20% | 10% | 3% | 2% |
+| 实证型 | 15% | 20% | 20% | 25% | 15% | 3% | 2% |
+
+---
+
+## 章节边界声明(最容易被忽略的一步)
+
+**写大纲时,每章节都要明确"不写什么"**,否则下笔就串台:
+
+| 章节 | 写什么 | 不写什么 |
+|---|---|---|
+| Introduction | 问题动机、贡献概述 | 详细方法、实验数字 |
+| Related Work | 已有工作的分类与比较 | 本文的新方法 |
+| Method | 本文方法 + 复杂度 | 实验结果、消融分析 |
+| Experiments | 数据/指标/baseline 设置 | 解释为什么效果好(→ Discussion) |
+| Results | 数字、图表 | 主观判断 |
+| Discussion | 结果含义、局限性 | 重复 Results 的数字 |
+
+---
+
+## 写作顺序建议
+
+1. **先写**:Method, Experiments(最容易,已有实验结果支撑)
+2. **后写**:Introduction, Abstract(需要全文视角)
+3. **穿插**:Related Work, Results, Discussion
+
+---
+
+## 示例 Prompt
+
+```
+请帮我规划以下论文的结构:
+
+选题:[填入]
+M3 实验结果概要:[填入]
+预期贡献:[填入]
+目标期刊:[填入]
+字数限制:[填入]
+
+输出:
+1. 论文类型定位
+2. 完整大纲(章节 + 子章节 + 字数分配)
+3. 章节边界声明(每章节"写什么/不写什么")
+4. 写作顺序建议
+```
+
+---
+
+## 相关跨域 reference
+
+- [`reference/writing/PAPER-WRITING-GUIDE.md`](../../reference/writing/PAPER-WRITING-GUIDE.md) 第 1.2 节(IMRAD 标准结构)
+- [`reference/writing/paper_structure_patterns.md`](../../reference/writing/paper_structure_patterns.md) — IMRaD 变体与替代结构
+- 模板:
+  - [`templates/imrad_template.md`](../../templates/imrad_template.md)
+  - [`templates/conference_paper_template.md`](../../templates/conference_paper_template.md)
+  - [`templates/case_study_template.md`](../../templates/case_study_template.md)
+  - [`templates/theoretical_paper_template.md`](../../templates/theoretical_paper_template.md)
+  - [`templates/literature_review_template.md`](../../templates/literature_review_template.md)
+- 下游:[m5-argument](../m5-argument/SKILL.md)(论证逻辑设计)/ [m6-writing](../m6-writing/SKILL.md)(写作执行)
+
+## Passport I/O
+
+- **Reads**: `research_question`、`methodology`、`bibliography[]`、`corpus[]`(M3 实验结果路径告知哪些章节有内容)
+- **Writes**: `outline`(chapter keys + section arrays + word count allocation)、`current_stage` → `m4`
+- **Stage transition**: advances passport to `current_stage = m4`(IMRAD chapter structure + section boundaries 现在定义完毕)

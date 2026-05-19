@@ -1,0 +1,18 @@
+{
+  "name": "paper-assistant",
+  "version": "0.1.0",
+  "description": "全流程论文写作辅助 plugin。M0 仪表盘 + M1–M9 九模块 + citation-search 独立子 skill,覆盖选题诊断、文献管理(含 Tier 0 反幻觉校验 + venue quality 过滤)、实验设计、结构规划、论证设计、写作辅助、投稿前总检、同行评审仿真、合规与伦理检查。",
+  "author": {
+    "name": "larbare"
+  },
+  "keywords": [
+    "academic-writing",
+    "literature-search",
+    "citation-verification",
+    "venue-quality",
+    "anti-hallucination",
+    "imrad",
+    "peer-review"
+  ],
+  "hooks": "./hooks/hooks.json"
+}
