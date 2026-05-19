@@ -1,4 +1,4 @@
-# 从 paper.skill v1 迁移到 paper-assistant plugin
+# 从 paper.skill v1 迁移到 paperfactory plugin
 
 本文档面向使用过老版 `paper.skill`(单 Claude Code skill 形式)的用户。
 
@@ -15,7 +15,7 @@
 Plugin 形态解决:
 - 每个 M{n} 是独立 skill,可被 `@` 单独激活
 - citation-search 是独立 skill,9 个 M{n} 都引用它
-- `/paper-assistant:init` 当首次入口
+- `/paperfactory:init` 当首次入口
 - hooks 通过 `plugin.json` 自动激活,无需用户复制设置
 
 ---
@@ -102,13 +102,13 @@ citation-search 是横切 skill,绝大多数时候**不需要直接 @**——M0-
 # 1. 备份你的论文项目
 cp -r /path/to/your-paper-project /path/to/your-paper-project.bak
 
-# 2. 在 Claude Code plugin 路径下放置 paper-assistant
+# 2. 在 Claude Code plugin 路径下放置 paperfactory
 # (参见 Claude Code 文档关于 plugin 安装位置)
 
 # 3. 在论文项目里跑 init
 cd /path/to/your-paper-project
 claude
-> /paper-assistant:init
+> /paperfactory:init
 ```
 
 `relate-work/` 内容(manifest.jsonl / pdf/ / ref-*.md)**完全兼容**,不需要迁移。

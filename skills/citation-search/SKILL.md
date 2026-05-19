@@ -12,14 +12,14 @@ allowed-tools: Bash Read Write Edit Grep Glob
 
 # citation-search
 
-> 论文检索 + 真实性验证 + venue 质量评估,paper-assistant 的检索基座。
+> 论文检索 + 真实性验证 + venue 质量评估,paperfactory 的检索基座。
 > 任何"我需要查文献 / 我需要验证引用 / 我需要看 venue 质量"的场景,都先来这里。
 
 ---
 
 ## 何时调用本 skill
 
-本 skill 是 paper-assistant 的**横切工具**,被以下场景调用:
+本 skill 是 paperfactory 的**横切工具**,被以下场景调用:
 
 | 来源场景 | 典型操作 | 推荐 mode |
 |---|---|---|

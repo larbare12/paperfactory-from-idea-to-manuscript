@@ -3,7 +3,7 @@ name: anti-hallucination-protocol
 description: |
   引用真实性三层验证机制 + 红线清单 + 实战陷阱(abstract-only cite、
   BibTeX parser 假阳性)。M2 文献入库、M5 论证引用、M6 写作时新增 \cite、
-  M7 总检审计前必读。这是 paper-assistant 最严重的红线协议——违反会直接
+  M7 总检审计前必读。这是 paperfactory 最严重的红线协议——违反会直接
   导致论文撤稿风险。
 applies_to: [m2, m5, m6, m7]
 related:
@@ -80,7 +80,7 @@ related:
 
 例如 `title = {{OASIS}: Open Agent Social ...}` 会被解析为 `{OASIS`,与 S2 真实 title 的 fuzzy match 失败,归类为 `DOI_MISMATCH / PAC`,但 DOI 实际能 resolve("DOI resolves but title mismatch")——这是**假阳性**,不是反幻觉失败。
 
-**判读规则**:报告显示 `DOI resolves` + `match_score < 0.7` + 该条目 .bib title 含嵌套 `{...}` 时,按照 known issue 处理;可临时建一份去掉大括号保护的 minimal .bib 重跑一次确认。修复 parser 是 paper-assistant 的待办(issue 待提)。
+**判读规则**:报告显示 `DOI resolves` + `match_score < 0.7` + 该条目 .bib title 含嵌套 `{...}` 时,按照 known issue 处理;可临时建一份去掉大括号保护的 minimal .bib 重跑一次确认。修复 parser 是 paperfactory 的待办(issue 待提)。
 
 ---
 

@@ -327,8 +327,8 @@ Claude Code Plugin **可以**附带 hooks 配置（在 `.claude-plugin/plugin.js
 > 倾向 **A**——五种 mode 共享大量公共逻辑（rate limiting、format jq、Levenshtein 函数），拆 wrapper 不能减小代码量；description 里把决策树写清楚即可。
 
 ### #7 plugin name 叫什么？
-候选：`paper-plugin` / `paper-assistant` / `academic-paper` / `paper-skill`（沿用）
-> 建议 `paper-assistant`，与现有 SKILL.md 标题一致；marketplace 上可加前缀如 `larbare/paper-assistant`。
+候选：`paper-plugin` / `paperfactory` / `academic-paper` / `paper-skill`（沿用）
+> 最终选择 `paperfactory: from idea to manuscript`。
 
 ---
 

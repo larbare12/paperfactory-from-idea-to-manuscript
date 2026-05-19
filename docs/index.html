@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>paper-assistant — 全流程论文写作辅助 Claude Code Plugin</title>
+<title>paperfactory — 全自动论文生产线 —— Claude Code Plugin</title>
 <meta name="description" content="M0 仪表盘 + M1-M9 九阶段模块 + citation-search 独立子 skill,覆盖选题诊断、文献管理、实验设计、结构规划、论证设计、写作辅助、投稿前总检、同行评审仿真、合规检查。">
 <style>
   :root {
@@ -348,7 +348,7 @@
 
 <nav class="toc">
   <div class="toc-inner">
-    <span class="brand">paper-assistant</span>
+    <span class="brand">paperfactory</span>
     <a href="#features">特性</a>
     <a href="#quick-start">快速开始</a>
     <a href="#routing">M0-M9 路由</a>
@@ -359,11 +359,10 @@
 </nav>
 
 <header class="hero">
-  <h1>paper-assistant</h1>
-  <p class="tagline">全流程论文写作辅助 Claude Code Plugin</p>
+  <h1>paperfactory</h1>
+  <p class="tagline">全自动论文生产线 —— Claude Code Plugin</p>
   <p class="subtitle">
-    M0 仪表盘 · M1-M9 九阶段模块 · citation-search 独立子 skill —
-    覆盖从选题诊断到合规检查的完整工作流,内置反幻觉硬约束与 venue quality 二道筛。
+    from idea to manuscript — 天下研究生苦小论文久矣。paperfactory 把整条生产线自动化，你只管 idea，剩下的交给流水线。
   </p>
   <div class="badges">
     <span class="badge">Claude Code Plugin</span>
@@ -381,7 +380,7 @@
 
   <section id="intro">
     <h2>初衷</h2>
-    <p>让研究者从繁琐的论文写作事务中解放出来,专注于真正的创新 —— <b>idea 本身</b>。</p>
+    <p>天下研究生，苦小论文久矣。paperfactory 想做一件事——<b>把从 idea 到 manuscript 的整条生产线自动化</b>。你负责想 idea，剩下的交给流水线。</p>
   </section>
 
   <section id="features">
@@ -429,7 +428,7 @@
         <h4>在论文项目里跑 init</h4>
 <pre><code>cd /path/to/your-paper-project
 claude  # 启动 session
-&gt; /paper-assistant:init</code></pre>
+&gt; /paperfactory:init</code></pre>
         <p>会自动:检查 git 仓库 + 工作区 → 检查 S2 API key 凭据 → 初始化 <code>relate-work/</code> + <code>manifest.jsonl</code> → 启用 hooks → 跑 M0 仪表盘首次扫描 → 给出下一步建议。</p>
       </li>
       <li>
@@ -493,7 +492,7 @@ skills/
 └── m9-compliance-check/     # 合规与伦理检查
 
 commands/
-└── init.md                  # /paper-assistant:init
+└── init.md                  # /paperfactory:init
 
 hooks/
 ├── hooks.json               # plugin-enforced hooks 声明
@@ -527,7 +526,7 @@ S2_API_KEY=Bearer xxxxx
 
 # multi mode 额外需 Python:
 pip install -r ${CLAUDE_PLUGIN_ROOT}/requirements.txt</code></pre>
-    <p><code>/paper-assistant:init</code> 会自动跑 <code>verify_config.sh</code> 检查。</p>
+    <p><code>/paperfactory:init</code> 会自动跑 <code>verify_config.sh</code> 检查。</p>
   </section>
 
   <section id="upgrade">

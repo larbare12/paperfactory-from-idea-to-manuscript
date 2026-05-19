@@ -1,11 +1,11 @@
 ---
-description: 初始化 paper-assistant 工作环境(凭据+relate-work+manifest+M0 首次扫描)
+description: 初始化 paperfactory 工作环境(凭据+relate-work+manifest+M0 首次扫描)
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 ---
 
-# /paper-assistant:init
+# /paperfactory:init
 
-> 在当前论文项目根目录(`$PWD`)启动 paper-assistant。
+> 在当前论文项目根目录(`$PWD`)启动 paperfactory。
 > 你(Claude)需要按下面 6 步执行,**每步遇阻就停下问用户**,不要静默跳过。
 
 ---

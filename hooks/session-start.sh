@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# paper-assistant SessionStart hook
+# paperfactory SessionStart hook
 # 在 paper 项目目录里启动 session 时:
 #   - 跑 verify_config.sh 自检凭据
 #   - 输出 M0 mini 状态(NEEDS-EVIDENCE 数 + manifest 状态)
@@ -12,12 +12,12 @@ if [[ ! -d "relate-work" ]]; then
     exit 0
 fi
 
-echo "📝 paper-assistant 已激活($PWD)" >&2
+echo "📝 paperfactory 已激活($PWD)" >&2
 
 # 凭据自检(失败不阻塞,只警告)
 if [[ -x "${CLAUDE_PLUGIN_ROOT}/skills/citation-search/scripts/verify_config.sh" ]]; then
     if ! bash "${CLAUDE_PLUGIN_ROOT}/skills/citation-search/scripts/verify_config.sh" >/dev/null 2>&1; then
-        echo "  ⚠️  citation-search 配置不完整 —— 运行 /paper-assistant:init 修复" >&2
+        echo "  ⚠️  citation-search 配置不完整 —— 运行 /paperfactory:init 修复" >&2
     fi
 fi
 

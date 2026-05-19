@@ -1,8 +1,8 @@
 <div align="center">
 
-# paper-assistant
+# paperfactory: from idea to manuscript
 
-<sub><b>全流程论文写作辅助 Claude Code Plugin</b></sub>
+<sub><b>Fully Automated Paper Production Pipeline — Claude Code Plugin</b></sub>
 
 <p>
   <img alt="Claude Code Plugin" src="https://img.shields.io/badge/Claude%20Code-Plugin-7C3AED?style=flat-square">
@@ -11,229 +11,230 @@
   <img alt="Status" src="https://img.shields.io/badge/status-active-22C55E?style=flat-square">
 </p>
 
-M0 仪表盘 · M1–M9 九阶段模块 · citation-search 独立子 skill<br>
-覆盖选题诊断 · 文献管理(<b>Tier 0 反幻觉 + venue quality</b>) · 实验设计<br>
-结构规划 · 论证设计 · 写作辅助 · 投稿前总检 · 同行评审仿真 · 合规检查
+M0 Dashboard · M1–M9 Pipeline · citation-search sub-skill<br>
+Topic diagnosis · literature management (<b>Tier 0 anti-hallucination + venue quality</b>) · experimental design<br>
+structure planning · argumentation · writing assistance · pre-submission audit · peer review simulation · compliance check
 
 <sub>
-  <a href="#快速开始">快速开始</a> ·
-  <a href="#架构">架构</a> ·
-  <a href="#核心特性">核心特性</a> ·
-  <a href="docs/MIGRATION.md">从 v1 升级</a> ·
-  <a href="docs/index.html">网页版文档</a>
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#features">Features</a> ·
+  <a href="docs/README_CN.md">中文文档</a> ·
+  <a href="docs/index.html">Web Docs</a>
 </sub>
 
 </div>
 
 ---
 
-## 初衷
+## Why
 
-让研究者从繁琐的论文写作事务中解放出来,专注于真正的创新 —— **idea 本身**。
+Grad students worldwide suffer through the paper grind. **paperfactory** automates the entire pipeline — from idea to manuscript. You bring the idea. The assembly line handles the rest.
 
 ---
 
-## 快速开始
+## Quick Start
 
-### 1. 安装
+### 1. Install
 
-把整个 plugin 目录放到 Claude Code 的 plugin 路径(参见 Claude Code 文档),或在本目录直接启动 Claude Code session。
+Place the plugin directory into your Claude Code plugin path (see Claude Code docs), or launch a Claude Code session directly from this directory.
 
-### 2. 在你的论文项目里跑
+### 2. Run inside your paper project
 
 ```bash
 cd /path/to/your-paper-project
-claude  # 启动 session
+claude  # start session
 ```
 
-第一次进入项目时,执行:
+On first entry, run:
 
 ```
-/paper-assistant:init
+/paperfactory:init
 ```
 
-会自动:
+This will automatically:
 
-1. 检查 git 仓库 + 工作区
-2. 检查 S2 API key 凭据(`.env`)
-3. 初始化 `relate-work/` + `manifest.jsonl`
-4. 启用 hooks(SessionStart / PreToolUse / PostToolUse / Stop)
-5. 跑 M0 仪表盘首次扫描
-6. 给出下一步建议
+1. Check git repo + workspace state
+2. Verify S2 API key credentials (`.env`)
+3. Initialize `relate-work/` + `manifest.jsonl`
+4. Enable hooks (SessionStart / PreToolUse / PostToolUse / Stop)
+5. Run the M0 dashboard first scan
+6. Suggest next steps
 
-### 3. 按 M0–M9 工作流推进
+### 3. Follow the M0–M9 workflow
 
 <table>
   <thead>
     <tr>
-      <th align="left">阶段</th>
-      <th align="left">命令</th>
+      <th align="left">Task</th>
+      <th align="left">Command</th>
     </tr>
   </thead>
   <tbody>
-    <tr><td>想找文献 / 验证引用 / 查 venue 质量</td><td><code>@citation-search</code></td></tr>
-    <tr><td>评估 idea 可行性</td><td><code>@m1-topic</code></td></tr>
-    <tr><td>文献综述 / bib 整理</td><td><code>@m2-literature</code></td></tr>
-    <tr><td>实验设计</td><td><code>@m3-experiment</code></td></tr>
-    <tr><td>IMRAD 大纲</td><td><code>@m4-structure</code></td></tr>
-    <tr><td>论证骨架 / DA 红队</td><td><code>@m5-argument</code></td></tr>
-    <tr><td>写正文 / 段落润色</td><td><code>@m6-writing</code></td></tr>
-    <tr><td>投稿前总检</td><td><code>@m7-final-check</code></td></tr>
-    <tr><td>同行评审仿真</td><td><code>@m8-peer-review</code></td></tr>
-    <tr><td>合规 + AI 披露</td><td><code>@m9-compliance-check</code></td></tr>
-    <tr><td>看项目状态</td><td><code>@m0-dashboard</code></td></tr>
+    <tr><td>Find papers / verify citations / check venue quality</td><td><code>@citation-search</code></td></tr>
+    <tr><td>Evaluate idea feasibility</td><td><code>@m1-topic</code></td></tr>
+    <tr><td>Literature review / bib management</td><td><code>@m2-literature</code></td></tr>
+    <tr><td>Experimental design</td><td><code>@m3-experiment</code></td></tr>
+    <tr><td>IMRAD outline</td><td><code>@m4-structure</code></td></tr>
+    <tr><td>Argument skeleton / DA red-team</td><td><code>@m5-argument</code></td></tr>
+    <tr><td>Draft writing / paragraph polishing</td><td><code>@m6-writing</code></td></tr>
+    <tr><td>Pre-submission audit</td><td><code>@m7-final-check</code></td></tr>
+    <tr><td>Peer review simulation</td><td><code>@m8-peer-review</code></td></tr>
+    <tr><td>Compliance + AI disclosure</td><td><code>@m9-compliance-check</code></td></tr>
+    <tr><td>View project status</td><td><code>@m0-dashboard</code></td></tr>
   </tbody>
 </table>
 
 ---
 
-## 架构
+## Architecture
 
 <details>
-<summary><b>点开查看完整目录树</b></summary>
+<summary><b>Click to expand full directory tree</b></summary>
 
 ```
 .claude-plugin/
 └── plugin.json              # plugin manifest
 
 skills/
-├── citation-search/         # 独立检索/验证基座(横切被其他 9 个 skill 调用)
+├── citation-search/         # standalone retrieval/verification base (cross-cutting, used by the other 9 skills)
 │   ├── SKILL.md
 │   ├── scripts/             # paper_search.sh, verify_citations.sh, venue_lookup.sh, ...
-│   ├── config/api.json      # S2/CrossRef 端点
+│   ├── config/api.json      # S2/CrossRef endpoints
 │   ├── data/                # CCF + JCR IF sqlite
-│   └── reference/           # 协议:literature-research / anti-hallucination / venue-quality / manifest-schema
-├── m0-dashboard/            # 项目仪表盘(横切常驻)
-├── m1-topic/                # 选题诊断
-├── m2-literature/           # 文献管理
-├── m3-experiment/           # 实验设计
-├── m4-structure/            # 结构规划
-├── m5-argument/             # 论证设计 + DA 协议
-├── m6-writing/              # 写作辅助 + Anti-Leakage
-├── m7-final-check/          # 投稿前总检
-├── m8-peer-review/          # 同行评审仿真
-└── m9-compliance-check/     # 合规与伦理检查
+│   └── reference/           # protocols: literature-research / anti-hallucination / venue-quality / manifest-schema
+├── m0-dashboard/            # project dashboard (cross-cutting, always active)
+├── m1-topic/                # topic diagnosis
+├── m2-literature/           # literature management
+├── m3-experiment/           # experimental design
+├── m4-structure/            # structure planning
+├── m5-argument/             # argumentation + DA protocol
+├── m6-writing/              # writing assistance + Anti-Leakage
+├── m7-final-check/          # pre-submission audit
+├── m8-peer-review/          # peer review simulation
+└── m9-compliance-check/     # compliance & ethics check
 
 commands/
-└── init.md                  # /paper-assistant:init
+└── init.md                  # /paperfactory:init
 
 hooks/
-├── hooks.json               # plugin-enforced hooks 声明
-├── session-start.sh         # 进 paper 项目自动跑 verify_config + M0 mini
-├── pre-draft-write.sh       # 写 draft/ 前提示 commit checkpoint
-├── post-draft-write.sh      # 新引用未跑 Tier 0 → 提醒
-└── stop-scan-gaps.sh        # [NEEDS-EVIDENCE] 数变化 → 提醒
+├── hooks.json               # plugin-enforced hooks declaration
+├── session-start.sh         # auto-runs verify_config + M0 mini on entering a paper project
+├── pre-draft-write.sh       # prompts commit checkpoint before writing to draft/
+├── post-draft-write.sh      # alerts if new citations haven't gone through Tier 0
+└── stop-scan-gaps.sh        # alerts if [NEEDS-EVIDENCE] count changes
 
-reference/                   # 跨 skill 共享的非检索类知识库
-├── writing/                 # 15 文件,写作风格 / 语言 / 格式
-├── research/                # 12 文件,研究方法论 / 实验设计
-├── review/                  # 9 文件,同行评审 / 质量评估
-└── compliance/              # 11 文件,PRISMA-trAIce / RAISE / AI 披露
+reference/                   # cross-skill shared knowledge base (non-retrieval)
+├── writing/                 # 15 files, writing style / language / formatting
+├── research/                # 12 files, research methodology / experimental design
+├── review/                  # 9 files, peer review / quality assessment
+└── compliance/              # 11 files, PRISMA-trAIce / RAISE / AI disclosure
 
-templates/                   # 15 个输出模板(IMRAD / poster / review report 等)
+templates/                   # 15 output templates (IMRAD / poster / review report / ...)
 
 docs/
-├── index.html               # GitHub Pages 网页版文档
-└── MIGRATION.md             # 从 paper.skill v1 升级指南
+├── README_CN.md             # 中文文档
+├── index.html               # GitHub Pages web documentation
+└── MIGRATION.md             # upgrade guide from paper.skill v1
 ```
 
 </details>
 
 ---
 
-## 核心特性
+## Features
 
-### 反幻觉硬约束
+### Anti-Hallucination Hard Constraints
 
-- **Tier 0 校验**:DOI 反查 + Levenshtein ≥ 0.70,识别 5 类幻觉(TF / PAC / IH / PH / SH)
-- **三层验证**:Layer 1 来源 → Layer 2 引用 → Layer 3 内容一致性
-- **红线清单**:模型记忆 cite 2024+ 论文 / preprint 当期刊 / 跳过 verify_citations.sh —— 任一触发立即 STOP
-- **abstract-only cite 反模式**:严禁基于 abstract 做 paraphrase,必须读全文
+- **Tier 0 verification**: DOI reverse lookup + Levenshtein ≥ 0.70, identifies 5 hallucination types (TF / PAC / IH / PH / SH)
+- **Three-layer validation**: Layer 1 Source → Layer 2 Citation → Layer 3 Content consistency
+- **Red-line checklist**: model-memorized post-2024 citations / preprint passed as journal / skipping verify_citations.sh — any trigger → immediate STOP
+- **Abstract-only anti-pattern**: paraphrasing from abstract alone is forbidden; full-text reading required
 
-详见 [`skills/citation-search/reference/anti-hallucination-protocol.md`](skills/citation-search/reference/anti-hallucination-protocol.md)。
+See [`skills/citation-search/reference/anti-hallucination-protocol.md`](skills/citation-search/reference/anti-hallucination-protocol.md).
 
-### Venue Quality 二道筛
+### Venue Quality Gate
 
-反幻觉只保证文献**真实**,不保证够**顶**。M2 筛选阶段强制跑 `venue_lookup.sh`:
+Anti-hallucination only guarantees a citation is **real**, not that it's **top-tier**. M2 screening enforces `venue_lookup.sh`:
 
-- 预印本(NBER WP / arXiv / SSRN)不能当方法论 baseline
-- 顶刊白名单 + CCF + JCR IF 自动判级
-- 真实事故复盘:2026-05-08 NBER WP w29166 当 baseline → 推倒重写一个 layer
+- Preprints (NBER WP / arXiv / SSRN) cannot serve as methodology baselines
+- Top-journal whitelist + CCF + JCR IF auto-grading
+- Real incident: 2026-05-08 NBER WP w29166 used as baseline → entire layer rewritten
 
-详见 [`skills/citation-search/reference/venue-quality-protocol.md`](skills/citation-search/reference/venue-quality-protocol.md)。
+See [`skills/citation-search/reference/venue-quality-protocol.md`](skills/citation-search/reference/venue-quality-protocol.md).
 
-### 三段式文献工作流
+### Three-Stage Literature Workflow
 
-广搜(`--mode multi`)→ 筛选(Stage 2)→ 收集(`collect_papers.sh` 自动入 manifest + OA PDF 下载)→ 用户补全闭源 → prune 找不到的。
+Broad search (`--mode multi`) → Screening (Stage 2) → Collection (`collect_papers.sh` auto-entry into manifest + OA PDF download) → user fills in closed-access gaps → prune unfindable.
 
-详见 [`skills/citation-search/reference/literature-research-protocol.md`](skills/citation-search/reference/literature-research-protocol.md)。
+See [`skills/citation-search/reference/literature-research-protocol.md`](skills/citation-search/reference/literature-research-protocol.md).
 
-### Anti-Leakage Protocol(M6 写作铁律)
+### Anti-Leakage Protocol (M6 Writing Rule)
 
-严禁用 parametric memory 填事实空白。所有数据点/引用/统计数字必须有 `relate-work/` 本地证据或 `find_evidence.sh` 实时检索结果。缺证据点必须插 `[MATERIAL GAP: ...]`,`check_material_gaps.sh` 拒绝输出含 GAP 的 final draft。
+Parametric memory must not be used to fill factual gaps. Every data point, citation, and statistic must have either a `relate-work/` local source or a `find_evidence.sh` live retrieval result. Missing evidence must be marked `[MATERIAL GAP: ...]`; `check_material_gaps.sh` rejects any final draft containing GAP markers.
 
-### Devil's Advocate Pass(M5 autonomous 强制)
+### Devil's Advocate Pass (M5 autonomous, mandatory)
 
-反 cascade concession:对每个 core claim(3-7 个)执行 Attack/Rebuttal/Concession 三轮,rebuttal score < 4 触发 soften/drop。
+Anti-cascade-concession: for each core claim (3–7), run three rounds of Attack / Rebuttal / Concession. Rebuttal score < 4 triggers soften/drop.
 
 ---
 
-## 凭据要求
+## Credentials
 
 ```bash
-# 在你的论文项目根创建 .env
+# Create .env in your paper project root
 cp ${CLAUDE_PLUGIN_ROOT}/.env.example .env
 
-# 在 https://www.semanticscholar.org/product/api 申请 S2 API key
-# 填入 .env:
+# Get an S2 API key at https://www.semanticscholar.org/product/api
+# Fill in .env:
 S2_API_KEY=Bearer xxxxx
 
-# multi mode 额外需 Python:
+# multi mode also requires Python:
 pip install -r ${CLAUDE_PLUGIN_ROOT}/requirements.txt
 ```
 
-`/paper-assistant:init` 会自动跑 `verify_config.sh` 检查。
+`/paperfactory:init` runs `verify_config.sh` automatically.
 
 ---
 
-## 升级指南
+## Upgrade Guide
 
-如果你之前在用 paper.skill v1(单 skill 形式),见 [`docs/MIGRATION.md`](docs/MIGRATION.md)。
+If you were using paper.skill v1 (single-skill layout), see [`docs/MIGRATION.md`](docs/MIGRATION.md).
 
 ---
 
-## 致谢
+## Acknowledgments
 
 <table>
   <tr>
     <td valign="top" width="50%">
       <h4>citation-assistant</h4>
-      <p><b>联网文献检索、期刊质量评估、BibTeX 生成</b>能力的种子来自
-        <a href="https://github.com/ZhangNy301/citation-assistant">citation-assistant</a>。</p>
-      <p><code>skills/citation-search/scripts/</code> 下的 <code>paper_search.sh</code> /
+      <p><b>Web literature search, journal quality assessment, and BibTeX generation</b> capabilities originate from
+        <a href="https://github.com/ZhangNy301/citation-assistant">citation-assistant</a>.</p>
+      <p><code>skills/citation-search/scripts/</code> — <code>paper_search.sh</code> /
         <code>venue_lookup.sh</code> / <code>author_info.sh</code> / <code>doi2bibtex.sh</code>
-        以及 CCF 与影响因子数据库均基于该项目改造。</p>
+        as well as CCF and impact factor databases are adapted from that project.</p>
     </td>
     <td valign="top" width="50%">
       <h4>academic-research-skills (ARS)</h4>
-      <p><b>M8/M9 模块设计、<code>reference/</code> 与 <code>templates/</code> 下 62 个参考文件和模板</b>
-        来自 academic-research-skills 项目(Cheng-I Wu, CC-BY-NC 4.0)。</p>
-      <p>包括 PRISMA-trAIce 协议、RAISE 框架、多视角审稿人模型、APA 7 风格指南、
-        逻辑谬误目录、学术写作风格指南等。</p>
+      <p><b>M8 / M9 module design, <code>reference/</code> and <code>templates/</code> (62 reference files and templates)</b>
+        originate from the academic-research-skills project (Cheng-I Wu, CC-BY-NC 4.0).</p>
+      <p>Including PRISMA-trAIce protocol, RAISE framework, multi-perspective reviewer model, APA 7 style guide,
+        logical fallacy catalog, academic writing style guide, and more.</p>
     </td>
   </tr>
 </table>
 
-### 平台
+### Platforms
 
-- [Semantic Scholar](https://www.semanticscholar.org/) — 学术检索 API
-- [CrossRef](https://www.crossref.org/) — DOI 元数据与 BibTeX content negotiation
-- [OpenAlex](https://openalex.org/) — 开放学术图谱
-- [arXiv](https://arxiv.org/) — 预印本仓库
-- [impact_factor](https://github.com/suqingdong/impact_factor) — 期刊 IF 数据库
+- [Semantic Scholar](https://www.semanticscholar.org/) — academic search API
+- [CrossRef](https://www.crossref.org/) — DOI metadata & BibTeX content negotiation
+- [OpenAlex](https://openalex.org/) — open scholarly graph
+- [arXiv](https://arxiv.org/) — preprint repository
+- [impact_factor](https://github.com/suqingdong/impact_factor) — journal IF database
 
 ---
 
 <div align="center">
-<sub><i>为科研效率而生。</i></sub>
+<sub><i>Built for research efficiency.</i></sub>
 </div>

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# paper-assistant PostToolUse hook (Write|Edit|MultiEdit)
+# paperfactory PostToolUse hook (Write|Edit|MultiEdit)
 # 写 draft/ 下文件后:
 #   - 若新写入的内容含 \cite{...},轻提示运行 verify_citations.sh
 #   - 若包含 [NEEDS-EVIDENCE] / [MATERIAL GAP],提示 m0-dashboard 会扫到

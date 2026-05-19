@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# paper-assistant Stop hook
+# paperfactory Stop hook
 # Claude 准备结束本轮回答时:
 #   - 若 draft/ 含 [NEEDS-EVIDENCE] / [MATERIAL GAP],提醒用户
 # 非 paper 项目 → 静默退出。永远 exit 0(不阻塞 stop)。

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# paper-assistant PreToolUse hook (Write|Edit|MultiEdit)
+# paperfactory PreToolUse hook (Write|Edit|MultiEdit)
 # 写 draft/ 下文件前提示用户最近 git 状态。
 # 非 paper 项目(无 relate-work/)→ 静默退出。
 # 永远 exit 0(不阻塞工具调用)。
