@@ -29,6 +29,11 @@ passport.*.yaml
 # don't track it. Real usage: `cd <your-paper-project> && bash <skill>/script/...`
 relate-work/
 
+# Internal planning docs (not for public)
+docs/IMPROVEMENT_PLAN.md
+docs/MIGRATION.md
+docs/PLUGIN_LAYOUT.md
+
 # Python bytecode cache
 __pycache__/
 *.pyc

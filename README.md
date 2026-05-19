@@ -134,8 +134,7 @@ templates/                   # 15 output templates (IMRAD / poster / review repo
 
 docs/
 ├── README_CN.md             # 中文文档
-├── index.html               # GitHub Pages web documentation
-└── MIGRATION.md             # upgrade guide from paper.skill v1
+└── index.html               # GitHub Pages web documentation
 ```
 
 </details>
@@ -196,10 +195,6 @@ pip install -r ${CLAUDE_PLUGIN_ROOT}/requirements.txt
 `/paperfactory:init` runs `verify_config.sh` automatically.
 
 ---
-
-## Upgrade Guide
-
-If you were using paper.skill v1 (single-skill layout), see [`docs/MIGRATION.md`](docs/MIGRATION.md).
 
 ---
 

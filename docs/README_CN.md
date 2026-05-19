@@ -19,7 +19,6 @@ M0 仪表盘 · M1–M9 九阶段模块 · citation-search 独立子 skill<br>
   <a href="#快速开始">快速开始</a> ·
   <a href="#架构">架构</a> ·
   <a href="#核心特性">核心特性</a> ·
-  <a href="MIGRATION.md">从 v1 升级</a> ·
   <a href="index.html">网页版文档</a>
 </sub>
 
@@ -135,7 +134,6 @@ templates/                   # 15 个输出模板(IMRAD / poster / review report
 docs/
 ├── README_CN.md             # 中文文档(本文件)
 ├── index.html               # GitHub Pages 网页版文档
-└── MIGRATION.md             # 从 paper.skill v1 升级指南
 ```
 
 </details>
@@ -196,10 +194,6 @@ pip install -r ${CLAUDE_PLUGIN_ROOT}/requirements.txt
 `/paperfactory:init` 会自动跑 `verify_config.sh` 检查。
 
 ---
-
-## 升级指南
-
-如果你之前在用 paper.skill v1(单 skill 形式),见 [`docs/MIGRATION.md`](MIGRATION.md)。
 
 ---
 
